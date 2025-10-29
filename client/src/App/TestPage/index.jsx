@@ -4,7 +4,7 @@ function TestPage() {
   return (
     <div className="h-screen flex items-center justify-center bg-gray-100">
       <h1 className="text-4xl font-bold text-gray-800">
-        Vamos viajar!
+        Para onde você quer ir?
       </h1>
     </div>
   );
