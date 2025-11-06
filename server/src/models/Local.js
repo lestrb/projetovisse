@@ -1,7 +1,11 @@
 import mongoose from "mongoose";
 const LocalSchema = new mongoose.Schema({
     nome: {type: String, required: True},
-    descricao: {type: String, required: True},
+    descricao: {
+        id: {type: mongoose.hema.Types.ObjectId, auto: True}, //Id automático para cada descrição
+        texto: {type: String, required: True},
+        curtidas: [{type: mongoose.Schema.Types.ObjectId, ref: "Usuario"}] //Array com id's de quem curtiu
+    },
     imagem_url: {type: String, required: True},
     autor_id: {type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: True},
     endereco: {
