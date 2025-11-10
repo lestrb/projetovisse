@@ -14,7 +14,7 @@ export const createLocal = async (req, res) => {
         } = req.body;
 
         // Valida se tem os dados mínimos
-        if (!nome || !imagem_url || !textoDescricao || !autor_id || !latitude || !longitude) {
+        if (!nome || !imagem_url || !descricao || !autor_id || !latitude || !longitude) {
             return res.status(400).json({ message: "Dados incompletos. Verifique os campos obrigatórios." });
         }
 
