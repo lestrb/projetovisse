@@ -7,7 +7,7 @@ export const createLocal = async (req, res) => {
         const { 
             nome, 
             imagem_url, 
-            textoDescricao, // O texto da única descrição
+            descricao, // O texto da descrição
             autor_id,       // ID do usuário logado (que está criando)
             latitude, 
             longitude 
@@ -21,18 +21,15 @@ export const createLocal = async (req, res) => {
         // Cria o objeto 'novoLocal' seguindo o Schema de Local
         const novoLocal = new Local({
             nome,
+            descricao,
+            curtidas: [], // Começa com um array de curtidas vazio
             imagem_url,
-            autor_id_cadastro: autor_id, // O autor que cadastrou o local
+            autor_id, // O autor que cadastrou o local
             endereco: {
                 coordenadas: {
                     latitude,
                     longitude
                 }
-            },
-            // Criada como um objeto único embedado
-            descricao: {
-                texto: textoDescricao,
-                autor_id: autor_id // O autor da descrição é o mesmo que criou o local
             }
         });
 
