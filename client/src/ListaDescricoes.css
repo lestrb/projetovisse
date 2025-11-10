@@ -1,0 +1,32 @@
+/* Seção Titulo */
+.secao-titulo {
+  padding: 16px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Lista */
+.lista {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0 16px 100px 16px; 
+}
+
+.card {
+  background: white;
+  padding: 14px;
+  border-radius: 14px;
+  margin-top: 16px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.card-img {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.likes {
+  font-size: 0.9rem;
+  color: #e54949;
+}
