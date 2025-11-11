@@ -1,0 +1,135 @@
+/* GERAL */
+.pagina-inicial {
+  font-family: 'Inter', sans-serif;
+  background-color: #fdfdfd;
+  color: #222;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 64px;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0077b6;
+}
+
+.menu a {
+  margin-left: 32px;
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.menu a:hover {
+  color: #0077b6;
+}
+
+.login-btn {
+  background-color: #0077b6;
+  color: white !important;
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+/* HERO */
+.hero {
+  background: linear-gradient(to bottom right, #0077b6, #0096c7);
+  color: white;
+  text-align: center;
+  padding: 100px 20px;
+}
+
+.hero h2 {
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+}
+
+.hero p {
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto 32px auto;
+}
+
+.botao-hero {
+  background-color: #ffcc00;
+  color: #333;
+  font-weight: 600;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.3s;
+}
+
+.botao-hero:hover {
+  transform: scale(1.05);
+  background-color: #ffd633;
+}
+
+/* CARROSSEL */
+.carrossel {
+  padding: 60px 40px;
+  text-align: center;
+}
+
+.carrossel h3 {
+  font-size: 1.8rem;
+  margin-bottom: 32px;
+  color: #0077b6;
+}
+
+.imagens-container {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  width: 300px;
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.card p {
+  padding: 16px;
+  font-weight: 600;
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 24px;
+  background-color: #f1f1f1;
+  margin-top: auto;
+  font-size: 0.9rem;
+  color: #555;
+}
