@@ -2,7 +2,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Home from './App/Home';
 import TestPage from './App/TestPage';
-import PaginaInicial from './Home/PaginaInicial'; 
+import PaginaInicial from './App/Home/PaginaInicial';
 
 function App() {
   return (
