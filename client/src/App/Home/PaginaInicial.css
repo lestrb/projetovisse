@@ -1,23 +1,28 @@
-/* GERAL E MOBILE BASE */
+/* GERAL E BASE DE DESKTOP/MOBILE */
 .pagina-inicial {
     font-family: 'Inter', sans-serif;
     background-color: #fdfdfd;
     color: #222;
     display: flex;
     flex-direction: column;
-    max-width: 450px; 
-    margin: 0 auto; 
     min-height: 100vh;
+}
+
+/* Wrapper para centralizar o conteúdo */
+.content-wrapper {
+    max-width: 450px; 
+    width: 100%;
+    margin: 0 auto; 
     padding-bottom: 70px; 
 }
 
-/* SEÇÃO "VISSE?"*/
+/* 1. SEÇÃO "VISSE?" (O Topo com Gradiente) */
 .visse-header-section {
     background: linear-gradient(90deg, #38e1a8 0%, #0099ff 40%, #ff8c00 100%);
     color: white;
     text-align: center;
     padding: 40px 20px 80px; 
-    margin-bottom: -40px;
+    margin-bottom: -40px; 
     clip-path: inset(0 0 -50px 0); 
 }
 
@@ -32,7 +37,7 @@
     font-weight: 500;
 }
 
-/* BOTÃO EXPLORAR MAPA */
+/* 2. BOTÃO EXPLORAR MAPA */
 .mapa-button-container {
     display: flex;
     justify-content: center;
@@ -79,7 +84,7 @@
     justify-content: center;
 }
 
-/* "BOMBANDO" */
+/* 3. SEÇÃO "BOMBANDO" (Lista de Locais) */
 .bombando-section {
     padding: 20px 15px;
 }
@@ -96,12 +101,17 @@
     margin-bottom: 15px;
 }
 
+.locais-list-container {
+    display: flex;
+    flex-direction: column; 
+    gap: 15px;
+}
+
 .local-card {
     background: white;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     overflow: hidden;
-    margin-bottom: 15px;
 }
 
 .card-image-container {
@@ -125,7 +135,6 @@
     z-index: 2;
 }
 
-/* Cores das tags */
 .blue-tag {
     background-color: #0099ff;
 }
@@ -187,7 +196,7 @@
     justify-content: center;
 }
 
-/* "PONTOS CAPIBA" */
+/* 4. SEÇÃO "PONTOS CAPIBA" */
 .pontos-capiba-section {
     background: linear-gradient(135deg, #ff8c00 0%, #ff4500 100%); 
     padding: 20px 15px;
@@ -226,6 +235,12 @@
     text-align: center;
 }
 
+/* Estilo para cartões que NÃO PONTUAM (Curta e Comentar) */
+.capiba-card.empty-card {
+    /* Torna o texto mais sutil, simulando que a funcionalidade está desativada */
+    opacity: 0.5; 
+}
+
 .card-icon {
     font-size: 1.5rem;
     display: block;
@@ -255,7 +270,7 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* BARRA DE NAVEGAÇÃO INFERIOR */
+/* 5. BARRA DE NAVEGAÇÃO INFERIOR (FooterNav) */
 .footer-nav {
     position: fixed;
     bottom: 0;
