@@ -1,0 +1,80 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #fafafa;
+}
+
+/* Header Principal */
+.topo {
+  text-align: center;
+  padding: 20px;
+  background: linear-gradient(45deg, #00c6ff, #ff7a00);
+  color: white;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  
+  position: fixed; 
+  top: 0;
+  width: 100%;
+  z-index: 20; 
+}
+
+/* Botão Flutuante */
+.btn-fab {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  background: #ff7a00;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 28px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 30;
+}
+
+/* Nav */
+.navbar {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: white;
+  display: flex;
+  justify-content: space-around;
+  border-top: 1px solid #ddd;
+  padding: 12px 0;
+  z-index: 20; 
+}
+.navbar a {
+    color: #888;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+/* Estilos Basicos de Formulario */
+input, select, textarea {
+  background: #f3f5f7;
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  color: #333333; /* Cor da fonte*/
+}
+
+textarea {
+  min-height: 110px;
+  resize: none;
+}
+
+/* Estilo para o Texto do Placeholder */
+input::placeholder,
+textarea::placeholder {
+  color: #999999;
+}
+::-webkit-input-placeholder { color: #999999; }
+::-moz-placeholder { color: #999999; }
+:-ms-input-placeholder { color: #999999; }

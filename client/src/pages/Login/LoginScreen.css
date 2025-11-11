@@ -1,0 +1,169 @@
+/* Importação de Fontes (Exemplo - você precisará dos arquivos ou links reais) */
+@import url('https://fonts.googleapis.com/css2?family=Tinos:wght@400;700&display=swap');
+/* Nota: 'aimos' não é uma fonte padrão do Google Fonts. 
+   Certifique-se de importá-la localmente ou substituir por uma similar se for 'Arimo'. */
+
+/* Configuração geral do container */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* Centraliza o bloco todo na tela */
+  
+  /* Dimensões e Espaçamento do Figma */
+  width: 100%; 
+  max-width: 997px; /* Respeita a largura do Figma, mas responsivo */
+  min-height: 100vh; /* Garante que ocupe a altura da tela */
+  gap: 48px; /* O espaçamento exato entre as seções */
+  
+  padding: 2rem 1rem;
+  box-sizing: border-box;
+  text-align: center;
+  
+  /* Fonte padrão (Outros textos) */
+  font-family: 'Arimo', 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  margin: 0 auto; /* centraliza o container quando max-width é aplicado */
+  background-color: #FFFFFF;
+  color: #1A1A1A; /* Cor de texto padrão da paleta */
+}
+
+/* --- Seção do Logo --- */
+.login-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-logo {
+  /* Fonte específica do Logo */
+  font-family: 'Tinos', serif; 
+  font-size: 4rem; /* Ajuste conforme necessário visualmente */
+  font-weight: bold;
+  color: #0A0A0A; /* O preto mais escuro da paleta */
+  margin: 0;
+  line-height: 1.2;
+}
+
+.login-logo span {
+  color: #FF670F; /* Laranja exato da paleta */
+}
+
+.login-slogan {
+  font-size: 1.125rem;
+  color: #1A1A1A;
+  margin-top: 16px;
+  font-weight: 500;
+}
+
+.login-icons {
+  font-size: 2.5rem;
+  margin-top: 24px;
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+}
+
+/* --- Seção de Features --- */
+.login-features {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-features h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #0A0A0A;
+}
+
+.features-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Espaço entre itens da lista */
+}
+
+.features-list li {
+  font-size: 1rem;
+  color: #1A1A1A;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Classe extra para pintar o checkmark com o Verde Neon */
+.features-list li .checkmark {
+    color: #DBFF00; /* Verde Neon da paleta */
+    /* Nota: Se usar emoji, a cor não muda. Use SVG ou ícone de fonte para ver essa cor. */
+    text-shadow: 0 0 2px #000; /* Borda fake para ver o amarelo no fundo branco */
+}
+
+/* exemplo de alternativa para checkmark usando pseudo-elemento */
+.features-list li::before {
+  content: "✓";
+  display: inline-block;
+  width: 1.2em;
+  color: #DBFF00; /* cor desejada para o check */
+  margin-right: 0.5em;
+  text-shadow: 0 0 2px #000;
+}
+
+/* --- Seção do Botão/Footer --- */
+.login-footer {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.login-button {
+  width: 100%;
+  padding: 16px 24px; /* Padding mais generoso */
+  font-size: 1.1rem;
+  font-weight: bold;
+  font-family: 'Arimo', 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  
+  color: #FFFFFF;
+  background-color: #FF670F; /* Laranja exato da paleta */
+  
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+
+.login-button:hover {
+  filter: brightness(0.9); /* Escurece levemente ao passar o mouse */
+}
+
+.footer-text {
+  font-size: 0.875rem;
+  color: #1A1A1A;
+  margin: 0;
+}
+
+.footer-text-secondary {
+  font-size: 0.75rem;
+  color: #666; /* Suavizado manualmente, ou use #1A1A1A com opacidade */
+  margin: 0;
+}
+
+/* Acessibilidade */
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
