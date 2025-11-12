@@ -7,7 +7,8 @@ import MainLayout from './layouts/MainLayout.jsx';
 import PaginaInicialFeed from './pages/Feed/PaginaInicial.jsx'; // A página de feed correta
 import MapScreen from './pages/MapScreen/index.jsx';
 import FormularioCadastroLocal from './pages/Formulario/FormularioCadastroLocal.jsx';
-// OBS: O 'Home' antigo e o 'TestPage' que estava faltando foram removidos.
+// [NOVA IMPORTAÇÃO] Importamos a tela de DescriçãoLocal
+import DescricaoLocal from './pages/Descrição Local/DescriçãoLocal.jsx';
 
 function App() {
   return (
@@ -24,13 +25,14 @@ function App() {
         {/* A página do mapa em "/app/mapa" */}
         <Route path="mapa" element={<MapScreen />} />
 
-        {/* [NOVO] Rota para o formulário de adicionar local */}
+        {/* Rota para o formulário de adicionar local */}
         <Route path="adicionar-local" element={<FormularioCadastroLocal />} />
-        
-        {/* Aqui você pode adicionar outras rotas que devem aparecer dentro do layout principal
-          ex: <Route path="perfil" element={<PaginaPerfil />} />
-          ex: <Route path="buscar" element={<PaginaBusca />} /> 
+
+        {/* [NOVA ROTA] Rota dinâmica para a descrição do local.
+            O ":id" é um parâmetro que vai mudar (ex: /app/local/1, /app/local/sovaj-bar, etc.)
         */}
+        <Route path="local/:id" element={<DescricaoLocal />} />
+        
 
       </Route>
       

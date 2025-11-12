@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import '../styles/Formularios.css';
+/*import React, { useState } from 'react';
+import '../../Formularios.css';
 
 const FormularioDescricao = ({ aoEnviar, aoVoltar }) => {
   const [textoDescricao, setTextoDescricao] = useState('');
@@ -38,4 +38,4 @@ const FormularioDescricao = ({ aoEnviar, aoVoltar }) => {
   );
 };
 
-export default FormularioDescricao;
+export default FormularioDescricao;*/ 

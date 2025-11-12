@@ -2,10 +2,32 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 function PaginaInicial() {
+  // Dados mocados (temporários) com IDs para os links
+  const locais = [
+    {
+      id: '1', // ID de exemplo
+      nome: 'Sovaj Veg Bar',
+      rating: '4.8',
+      imagem: 'https://imagens.ne10.uol.com.br/veiculos/_midias/jpg/2024/10/02/img_4476-32921678.jpeg'
+    },
+    {
+      id: '2', // ID de exemplo
+      nome: 'Rua da Feira',
+      rating: '4.6',
+      imagem: 'https://ton.x.com/i/ton/data/dm/1988061385616748852/1988061377458475008/f2eU1eTD.png:medium'
+    },
+    {
+      id: '3', // ID de exemplo
+      nome: 'Feira na Laje',
+      rating: '4.9',
+      imagem: 'https://cdn.folhape.com.br/img/pc/1100/1/dn_arquivo/2025/04/whatsapp-image-2025-04-04-at-184205.jpg'
+    }
+  ];
+
   return (
     <div className="pagina-inicial font-inter text-gray-900 min-h-screen flex flex-col">
       
-      {/* HEADER - Corrigido e Mesclado */}
+      {/* ... (O Header e outras seções permanecem iguais) ... */}
       <header className="header w-full bg-gradient-to-r from-[#0077b6] to-[#00b4d8] text-white py-6 px-6 sm:px-16 flex flex-col sm:flex-row items-center justify-between shadow-md">
         <div className="logo-container">
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">Visse?</h1>
@@ -51,49 +73,33 @@ function PaginaInicial() {
         <div className="w-full max-w-6xl">
           <h3 className="sr-only">Lugares em destaque</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
-            {/* Card 1 */}
-            <article className="card-bombando bg-white rounded-2xl overflow-hidden shadow-lg hover:scale-105 transition transform">
-              <img
-                src="https://imagens.ne10.uol.com.br/veiculos/_midias/jpg/2024/10/02/img_4476-32921678.jpeg"
-                alt="Sovaj Veg Bar"
-                className="h-60 w-full object-cover"
-              />
-              <div className="p-4 flex items-center justify-between">
-                <h3 className="font-semibold text-lg">Sovaj Veg Bar</h3>
-                <span className="text-yellow-500 text-xl">⭐ 4.8</span>
-              </div>
-            </article>
-
-            {/* Card 2 */}
-            <article className="card-bombando bg-white rounded-2xl overflow-hidden shadow-lg hover:scale-105 transition transform">
-              <img
-                src="https://ton.x.com/i/ton/data/dm/1988061385616748852/1988061377458475008/f2eU1eTD.png:medium"
-                alt="Rua da Feira"
-                className="h-60 w-full object-cover"
-              />
-              <div className="p-4 flex items-center justify-between">
-                <h3 className="font-semibold text-lg">Rua da Feira</h3>
-                <span className="text-yellow-500 text-xl">⭐ 4.6</span>
-              </div>
-            </article>
-
-            {/* Card 3 */}
-            <article className="card-bombando bg-white rounded-2xl overflow-hidden shadow-lg hover:scale-105 transition transform">
-              <img
-                src="https://cdn.folhape.com.br/img/pc/1100/1/dn_arquivo/2025/04/whatsapp-image-2025-04-04-at-184205.jpg"
-                alt="Feira na Laje"
-                className="h-60 w-full object-cover"
-              />
-              <div className="p-4 flex items-center justify-between">
-                <h3 className="font-semibold text-lg">Feira na Laje</h3>
-                <span className="text-yellow-500 text-xl">⭐ 4.9</span>
-              </div>
-            </article>
+            
+            {/* [CARDS DINÂMICOS] Agora usamos os dados mocados e o <Link> */}
+            {locais.map((local) => (
+              <Link 
+                to={`/app/local/${local.id}`} 
+                key={local.id} 
+                className="card-bombando block bg-white rounded-2xl overflow-hidden shadow-lg hover:scale-105 transition transform"
+              >
+                <article>
+                  <img
+                    src={local.imagem}
+                    alt={local.nome}
+                    className="h-60 w-full object-cover"
+                  />
+                  <div className="p-4 flex items-center justify-between">
+                    <h3 className="font-semibold text-lg">{local.nome}</h3>
+                    <span className="text-yellow-500 text-xl">⭐ {local.rating}</span>
+                  </div>
+                </article>
+              </Link>
+            ))}
+            
           </div>
         </div>
       </section>
 
-      {/* SEÇÃO GANHE PONTOS CAPIBA */}
+      {/* ... (Restante do arquivo permanece igual) ... */}
       <section className="ganhe-pontos bg-gradient-to-r from-[#f3722c] to-[#f8961e] py-14 px-6 sm:px-16 text-center text-white">
         <h2 className="text-3xl font-bold mb-8">Ganhe Pontos Capiba 💰</h2>
         <p className="text-lg mb-10 opacity-95 max-w-3xl mx-auto">
