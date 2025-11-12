@@ -68,7 +68,7 @@ function Home() {
           className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-5 rounded-full shadow-lg transition"
           aria-label="Adicionar local"
           title="Adicionar local"
-          onClick={() => navigate('/test')}
+          onClick={() => navigate('/app/adicionar-local')}
         >
           <FiPlus size={18} />
           Adicionar local

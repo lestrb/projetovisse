@@ -2,9 +2,6 @@ import React, { useEffect } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import * as L from 'leaflet';
 
-// Importação essencial do CSS do Leaflet
-import 'leaflet/dist/leaflet.css';
-
 // Importação das imagens de ícones padrão do Leaflet
 // Isso é necessário para corrigir um problema comum em bundlers (Webpack, Vite)
 // onde os caminhos dos ícones padrão quebram.

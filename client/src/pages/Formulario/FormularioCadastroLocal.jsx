@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import '../styles/Formularios.css';
-
+import '../../Formularios.css';
 
 const FormularioCadastroLocal = ({ aoEnviar, aoVoltar }) => {
   const [nomeLocal, setNomeLocal] = useState('');
