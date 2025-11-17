@@ -1,0 +1,1 @@
+// This model represents a user in the application.
