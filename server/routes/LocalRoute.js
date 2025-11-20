@@ -3,12 +3,8 @@ import { createLocal } from '../controllers/LocalController.js'; // função de 
 
 const localRouter = Router();
 
-// Endpoint: quando uma requisição POST chegar em '/', executa a função createLocal
 localRouter.post('/', createLocal);
-
-// Em breve:
-// localRouter.get('/', getAllLocais);
-// localRouter.get('/:id', getLocalById);
-// localRouter.post('/:id/descricao', addDescricaoToLocal);
+//localRouter.get('/', getAllLocais);
+//localRouter.get('/:id', getLocalById);
 
 export default localRouter;

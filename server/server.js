@@ -1,16 +1,22 @@
+// server.js - SUBSTITUA TODO O CÓDIGO POR ESTE:
 import express from 'express';
-import router from './src/routes/index.js';
+import router from './routes/index.js';
 import connectDB from './Config/db.js';
+import dotenv from 'dotenv';
 
-const app = express();
+dotenv.config();
 
-app.use(express.json()); // Middleware para o Express conseguir "ler" o JSON do body da requisição
+const app = express(); 
 
-app.use(router); // As rotas devem vem depois do middleware de json
+app.use(express.json());
+app.use(router);
 
-// Conect Database
+// Conecta ao banco
 connectDB();
 
-app.listen(3000, () => {
-    console.log('Servidor rodando em http://localhost:3000'); // Anterior: 'server running at http://st:3000'
-}) 
+
+app.listen(3002, () => {
+    console.log(`✅ Servidor rodando em http://localhost:3002`);
+}).on('error', (err) => {
+    console.error(' Erro ao iniciar servidor:', err);
+});

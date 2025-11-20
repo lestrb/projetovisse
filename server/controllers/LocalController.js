@@ -18,11 +18,11 @@ export const createLocal = async (req, res) => {
         const longitude = req.body.longitude !== undefined ? parseFloat(req.body.longitude) : NaN;
 
         // Valida se tem os dados mínimos
-        if (!nome || !descricao || !autor_id || !endereco) {
+        if (!nome || !descricao || !autor_id || !endereco) { 
             return res.status(400).json({ message: "Dados incompletos. Verifique os campos obrigatórios." });
         }
 
-        // Verifica se autor_id tem o formato de ObjectId
+        // Verifica se autor_id tem o formato de ObjectId 
         if (!mongoose.Types.ObjectId.isValid(autor_id)) {
             return res.status(400).json({ message: "autor_id inválido." });
         }

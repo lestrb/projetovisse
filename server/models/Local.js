@@ -8,7 +8,7 @@ const LocalSchema = new mongoose.Schema({
     endereco: { type: String, required: true },
     latitude: { type: Number, required: true },
     longitude: { type: Number, required: true },
-    autor_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: true }, // Quem cadastrou o local
+    autor_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: true }, // Quem cadastrou o local 
     criado_em: { type: Date, default: Date.now }
   /*  comentarios: [{
         usuario_id: { type: mongoose.Schema.Types.ObjectId, ref: "Usuario", required: true },
@@ -18,8 +18,4 @@ const LocalSchema = new mongoose.Schema({
     }], */
 });
 
-// Indice único por coordenada (corrige o campo duplicado)
-//LocalSchema.index({ "endereco.coordenadas.latitude": 1, "endereco.coordenadas.longitude": 1 }, { unique: true });
-// pode existir locais no mesmo endereço, galerias, predios e etc
-
-export default mongoose.model("Local", LocalSchema);
+export default mongoose.model("Local", LocalSchema, "locais");
