@@ -4,13 +4,13 @@ import mongoose from 'mongoose';
 // CRIAR LOCAL
 export const createLocal = async (req, res) => {
     try {
+        const autor_id = req.usuario._id;
         // Pega os dados do frontend
         const {
             nome,
             descricao,
             imagem_url, 
             endereco, 
-            autor_id
         } = req.body;
 
         // parseFloat transforma string em número
@@ -18,7 +18,7 @@ export const createLocal = async (req, res) => {
         const longitude = req.body.longitude !== undefined ? parseFloat(req.body.longitude) : NaN;
 
         // Valida se tem os dados mínimos
-        if (!nome || !descricao || !autor_id || !endereco) { 
+        if (!nome || !descricao || !endereco) { 
             return res.status(400).json({ message: "Dados incompletos. Verifique os campos obrigatórios." });
         }
 

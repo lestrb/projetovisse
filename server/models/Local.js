@@ -4,7 +4,7 @@ const LocalSchema = new mongoose.Schema({
     nome: { type: String, required: true },         // Nome do local
     descricao: { type: String, required: true },    // Descrição única do local 
     curtidas: [{ type: mongoose.Schema.Types.ObjectId, ref: "Usuario" }],   // Array de IDs de usuários que curtiram o local
-    imagem_url: { type: String, required: true },
+    imagem_url: { type: String, required: false },
     endereco: { type: String, required: true },
     latitude: { type: Number, required: true },
     longitude: { type: Number, required: true },
