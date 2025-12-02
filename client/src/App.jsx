@@ -10,6 +10,9 @@ import FormularioCadastroLocal from './pages/Formulario/FormularioCadastroLocal.
 // [NOVA IMPORTAÇÃO] Importamos a tela de DescriçãoLocal
 import DescricaoLocal from './pages/Descrição Local/DescriçãoLocal.jsx';
 
+// [NOVA IMPORTAÇÃO] Tela de conversão de pontos para Moeda Capiba
+import ConversaoCapibaScreen from './pages/ConversaoCapiba/ConversaoCapibaScreen.jsx';
+
 function App() {
   return (
     <Routes>
@@ -32,7 +35,8 @@ function App() {
             O ":id" é um parâmetro que vai mudar (ex: /app/local/1, /app/local/sovaj-bar, etc.)
         */}
         <Route path="local/:id" element={<DescricaoLocal />} />
-        
+
+        <Route path="conversao" element={<ConversaoCapibaScreen />} />
 
       </Route>
       
