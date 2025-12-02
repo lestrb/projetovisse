@@ -1,0 +1,20 @@
+.header-capiba {
+  background-color: #00bcd4;
+}
+
+.moedas-valor {
+  color: #FF670F;
+}
+
+.btn-converter {
+  background-color: #FF670F;
+  color: white;
+  border-radius: 16px;
+  padding: 12px;
+  width: 100%;
+  font-weight: 600;
+}
+
+.page-capiba {
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
