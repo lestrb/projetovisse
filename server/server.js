@@ -1,5 +1,6 @@
 // server.js - SUBSTITUA TODO O CÓDIGO POR ESTE:
 import express from 'express';
+import cors from 'cors';
 import router from './routes/index.js';
 import connectDB from './Config/db.js';
 import dotenv from 'dotenv';
@@ -7,6 +8,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express(); 
+
+app.use(cors());
 
 app.use(express.json());
 app.use(router);
