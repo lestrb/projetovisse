@@ -19,4 +19,6 @@ const LocalSchema = new mongoose.Schema({
     }], */
 });
 
+LocalSchema.index({ latitude: 1, longitude: 1 });
+
 export default mongoose.model("Local", LocalSchema, "locais");

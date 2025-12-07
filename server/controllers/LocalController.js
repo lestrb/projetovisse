@@ -13,7 +13,10 @@ export const createLocal = async (req, res) => {
             tipo,
             imagem_url, 
             endereco, 
+            forceCreate
         } = req.body;
+
+        const forcarCriacao = forceCreate === true || forceCreate === 'true' || forceCreate === 1 || forceCreate === '1';
 
         // parseFloat transforma string em número
         //const latitude = req.body.latitude !== undefined ? parseFloat(req.body.latitude) : NaN;
@@ -29,6 +32,21 @@ export const createLocal = async (req, res) => {
             return res.status(400).json({ message: "autor_id inválido." });
         }
 
+        let latitude, longitude;
+    
+        try {
+        const coords = await geocodeAddress(endereco);
+        latitude = coords.latitude;
+        longitude = coords.longitude;
+        console.log(`Geocoding realizado: ${latitude}, ${longitude}`);
+        } catch (geocodeError) {
+        // 🚨 ERRO NO GEOCODING - informar usuário
+        return res.status(400).json({
+            message: geocodeError.message,
+            sugestao: "Tente adicionar bairro, cidade e estado. Ex: 'Rua das Flores, 123 - Boa Vista, Recife - PE'"
+        });
+        }
+
         // Validação das coordenadas
         //if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
         //    return res.status(400).json({
@@ -39,6 +57,26 @@ export const createLocal = async (req, res) => {
         // TENTAR OBTER COORDENADAS - SE FALHAR, RETORNAR ERRO (a fazer)
 
         // CHAMAR O SERViÇO DE GEOCODING (a fazer)
+
+        const localExistente = await Local.findOne({
+            latitude: { $gte: latitude - 0.001, $lte: latitude + 0.001 },
+            longitude: { $gte: longitude - 0.001, $lte: longitude + 0.001 }
+        });
+
+        // Se encontrou local existente E NÃO foi forçado a criar
+        if (localExistente && !forcarCriacao) {
+            return res.status(409).json({ 
+                message: `Já existe um local nesse endereço, chamado "${localExistente.nome}". Tem certeza que não é o mesmo local e deseja cadastrar este?`,
+                localExistente: {
+                    nome: localExistente.nome,
+                    tipo: localExistente.tipo,
+                    endereco: localExistente.endereco
+                },
+                // Dados que o frontend pode usar para confirmar
+                confirmacaoNecessaria: true,
+                coordenadas: { latitude, longitude }
+            });
+        }
 
         // Cria o objeto 'novoLocal' seguindo o Schema de Local
         const novoLocal = new Local({
@@ -63,15 +101,17 @@ export const createLocal = async (req, res) => {
         // Trata erros
         console.error("Erro ao criar local:", error);
 
-        //if (error.code === 11000) {
-        //    return res.status(409).json({ message: "Já existe um local cadastrado nessas coordenadas." });
-        //} 
-        // vamos colocar uma mensagem tipo: 
-        //if (error.code === 11000) {
-        //    return res.status(409).json({ message: `Já existe um local nesse endereço, chamado ${req.body.nome}. Tem certeza que não é o mesmo local e deseja cadastrar este?` });
-        //}
-
-        return res.status(500).json({ message: "Erro interno do servidor.", error: error.message });
+        if (error.code === 11000) {
+            return res.status(409).json({ 
+                message: "Já existe um local cadastrado com esses dados.",
+                error: error.message 
+            });
+        }
+        
+        return res.status(500).json({ 
+            message: "Erro interno do servidor.", 
+            error: error.message 
+        });
     }
 };
 
