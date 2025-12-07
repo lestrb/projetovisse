@@ -1,52 +1,76 @@
-// authMiddleware.js
-import jwt from 'jsonwebtoken';
+import axios from 'axios';
 import Usuario from '../models/Usuario.js';
+
+const CAPIBA_API_URL = 'https://gamificacao.homolog.app.emprel.gov.br/api';
 
 const authMiddleware = async (req, res, next) => {
     try {
-
         const authHeader = req.headers.authorization;
         
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return res.status(401).json({ 
-                message: 'Token não fornecido ou formato inválido. Use: Bearer <token>' 
+                message: 'Token não fornecido. Use: Bearer <token>' 
             });
         }
 
-        // Extrair o token
         const token = authHeader.split(' ')[1];
 
-        // Tenta pegar o segredo do .env, mesmo padrão do authController
-        const secret = process.env.JWT_SECRET || 'segredo_padrao_desenvolvimento';
+        // Validar token chamando a API Capiba
+        try {
+            const response = await axios.get(`${CAPIBA_API_URL}/self`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
 
-        // Verificar e decodificar o token
-        const decoded = jwt.verify(token, secret);
-        
-        // Buscar usuário pelo ID do token (sem a senha)
-        const usuario = await Usuario.findById(decoded.id).select('-senha');
-        
-        if (!usuario) {
-            return res.status(401).json({ message: 'Token inválido - usuário não encontrado' });
+            const capibaData = response.data;
+            
+            // Busca usuário no banco local pelo document/CPF
+            const usuarioLocal = await Usuario.findOne({ 
+                document: capibaData.document 
+            });
+
+            if (!usuarioLocal) {
+                return res.status(401).json({ 
+                    message: 'Usuário não encontrado. Faça login novamente.' 
+                });
+            }
+
+            // Adiciona dados do usuário à requisição
+            req.usuario = {
+                _id: usuarioLocal._id, // ID do MongoDB (para relacionamentos)
+                capiba_id: usuarioLocal.capiba_id,
+                nome: usuarioLocal.nome,
+                document: usuarioLocal.document,
+                email: usuarioLocal.email,
+                // Dados atualizados da API Capiba
+                balance: capibaData.balance,
+                newAchievements: capibaData.newAchievements,
+                capibaData: capibaData
+            };
+
+            next();
+
+        } catch (apiError) {
+            console.error('Erro ao validar token na API Capiba:', apiError.message);
+            
+            if (apiError.response?.status === 401) {
+                return res.status(401).json({ message: 'Token inválido ou expirado' });
+            }
+            
+            return res.status(500).json({ 
+                message: 'Erro ao validar autenticação',
+                error: apiError.message 
+            });
         }
-
-        // Adicionar usuário à request
-        req.usuario = usuario;
-        next();
 
     } catch (error) {
-        console.error('Erro na autenticação:', error);
-        
-        if (error.name === 'JsonWebTokenError') {
-            return res.status(401).json({ message: 'Token inválido' });
-        }
-        
-        if (error.name === 'TokenExpiredError') {
-            return res.status(401).json({ message: 'Token expirado' });
-        }
-
-        res.status(500).json({ message: 'Erro no servidor durante autenticação' });
+        console.error('Erro no middleware de autenticação:', error);
+        return res.status(500).json({ 
+            message: 'Erro no servidor durante autenticação',
+            error: error.message 
+        });
     }
-};
+}; 
 
 export default authMiddleware;
-
