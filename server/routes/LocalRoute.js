@@ -1,11 +1,21 @@
 import { Router } from 'express';
-import { createLocal } from '../controllers/LocalController.js'; // função de lógica (controller)
+
+import { 
+    createLocal, 
+    getAllLocais, 
+    getLocalById, 
+    updateLocal, 
+    deleteLocal 
+} from '../controllers/LocalController.js'; 
+
 import authMiddleware from '../middlewares/authMiddleware.js';
 
 const localRouter = Router();
 
 localRouter.post('/', authMiddleware, createLocal);
-//localRouter.get('/', getAllLocais);
-//localRouter.get('/:id', getLocalById);
+localRouter.get('/', authMiddleware, getAllLocais);
+localRouter.get('/:id', authMiddleware, getLocalById);
+localRouter.put('/:id', authMiddleware, updateLocal);
+localRouter.delete('/:id', authMiddleware, deleteLocal);
 
 export default localRouter;
