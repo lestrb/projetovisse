@@ -1,55 +1,57 @@
-import React, { useEffect } from 'react';
-import { Marker, Popup, useMap } from 'react-leaflet';
+import React from 'react';
+import { Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 
-// Helper para criar ícone customizado (opcional)
+// Importando as imagens aqui
+import markerIconPng from 'leaflet/dist/images/marker-icon.png';
+import markerIcon2xPng from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadowPng from 'leaflet/dist/images/marker-shadow.png';
+
+// Criando um objeto de ícone fixo
+const DefaultIcon = L.icon({
+  iconUrl: markerIconPng,
+  iconRetinaUrl: markerIcon2xPng,
+  shadowUrl: markerShadowPng,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+// Helper para ícones customizados
 export function createIcon({ iconUrl, iconSize = [25, 41], iconAnchor = [12, 41], shadowUrl } = {}) {
-  const options = {};
-  if (iconUrl) options.iconUrl = iconUrl;
-  if (shadowUrl) options.shadowUrl = shadowUrl;
-  options.iconSize = iconSize;
-  options.iconAnchor = iconAnchor;
-  return L.icon(options);
+  return L.icon({
+    iconUrl,
+    shadowUrl: shadowUrl || markerShadowPng, // Usa sombra padrão se não tiver
+    iconSize,
+    iconAnchor,
+  });
 }
 
 export default function LeafletMarkers({
-  markers = [], // [{ id, lat, lng, title, description, icon }]
+  markers = [],
   onMarkerClick = null,
-  fitBounds = true,
-  boundsPadding = [50, 50],
   popupRenderer = (m) => (
     <div>
-      <strong>{m.title}</strong>
-      {m.description && <div>{m.description}</div>}
+      <strong className="text-sm text-gray-800">{m.title}</strong>
+      {m.description && <div className="text-xs text-gray-500 mt-1">{m.description}</div>}
     </div>
   ),
 }) {
-  const map = useMap();
-
-  useEffect(() => {
-    if (!map) return;
-    if (!fitBounds) return;
-    if (!markers || markers.length === 0) return;
-
-    const latlngs = markers.map((m) => [m.lat, m.lng]);
-    try {
-      const bounds = L.latLngBounds(latlngs);
-      map.fitBounds(bounds, { padding: boundsPadding });
-    } catch (e) {
-      // silencioso
-    }
-  }, [map, markers, fitBounds, boundsPadding]);
-
+  
   return (
     <>
       {markers.map((m) => {
         const position = [m.lat, m.lng];
-        const icon = m.icon ? createIcon(m.icon) : undefined;
+        
+        // Ou usa o customizado, ou usa o DefaultIcon
+        const iconToUse = m.icon ? createIcon(m.icon) : DefaultIcon;
+
         return (
           <Marker
             key={m.id ?? `${m.lat}-${m.lng}`}
             position={position}
-            icon={icon}
+            icon={iconToUse} 
             eventHandlers={{
               click: () => onMarkerClick?.(m),
             }}
