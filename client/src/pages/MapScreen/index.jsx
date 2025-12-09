@@ -1,103 +1,123 @@
-import React, { useEffect, useCallback } from 'react'; // Importe useEffect e useCallback
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'; // Importe os componentes principais do Leaflet
-import * as L from 'leaflet'; // Importe a biblioteca 'L'
-import { FiTarget, FiPlus } from 'react-icons/fi';
+import { FiPlus } from 'react-icons/fi';
 
-// Importe o CSS do Leaflet aqui
-import 'leaflet/dist/leaflet.css';
-// Não vamos importar as imagens .png, pois isso causa o erro de compilação
+// Ajuste os caminhos se necessário
+import LeafletMap from '../../components/Map/LeafletMap';
+import LeafletMarkers from '../../components/Map/LeafletMarkers';
 
-function Home() {
+export default function MapScreen() {
   const navigate = useNavigate();
+  const [filtroAtivo, setFiltroAtivo] = useState('Todos');
 
-  const center = {
-    lat: -8.05389,
-    lng: -34.88111
+  // Categorias do seu projeto
+  const categorias = [
+    'Todos',
+    'Bares',
+    'Ar Livre',
+    'Cultura',
+    'Histórico',
+    'Gastronomia',
+    'Feiras'
+  ];
+
+  // Dados Mockados
+  const allMarkers = [
+    { 
+      id: '1', 
+      lat: -8.0631, 
+      lng: -34.8711, 
+      title: 'Marco Zero', 
+      description: 'Coração do Recife Antigo',
+      tipo: 'Histórico'
+    },
+    { 
+      id: '2', 
+      lat: -8.0522, 
+      lng: -34.8852, 
+      title: 'Parque 13 de Maio', 
+      description: 'Lazer e natureza',
+      tipo: 'Ar Livre'
+    },
+    { 
+      id: '3', 
+      lat: -8.0450, 
+      lng: -34.9000, 
+      title: 'Mercado da Madalena', 
+      description: 'Gastronomia regional',
+      tipo: 'Gastronomia'
+    },
+    { 
+      id: '4', 
+      lat: -8.0580, 
+      lng: -34.8720, 
+      title: 'Sovaj Veg Bar', 
+      description: 'Bar vegano na Boa Vista',
+      tipo: 'Bares'
+    }
+  ];
+
+  // Filtra os marcadores com base na categoria selecionada
+  const markersFiltrados = filtroAtivo === 'Todos' 
+    ? allMarkers 
+    : allMarkers.filter(m => m.tipo === filtroAtivo);
+
+  const handleMarkerClick = (marker) => {
+    navigate(`/app/local/${marker.id}`);
   };
-  const leafletCenter = [center.lat, center.lng];
 
-  // EFEITO PARA CORRIGIR ÍCONES DO LEAFLET (MUITO IMPORTANTE)
-  // Esta é a parte que foi corrigida:
-  useEffect(() => {
-    delete L.Icon.Default.prototype._getIconUrl;
-    L.Icon.Default.mergeOptions({
-      // Usamos require() para que o Webpack encontre os caminhos corretos das imagens
-      iconUrl: require('leaflet/dist/images/marker-icon.png'),
-      iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-      shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-    });
-  }, []); // O array vazio [] garante que isso rode apenas uma vez
-
-  const onMapReady = useCallback(function callback(map) {
-    console.log("Mapa carregado!", map);
-  }, []);
-
-  // Note que renomeei a prop "onMapUnmount" para "whenUnmount"
-  // E "onMapReady" para "whenReady"
-  // (Na verdade, whenUnmount não é uma prop válida, então removi para evitar warnings)
-  // a prop 'whenReady' é a correta para o react-leaflet moderno.
-  
   return (
-    <div className="w-full flex-1 flex flex-col bg-gray-100">
-      {/* Top bar interna (título + ação) */}
-      <div className="w-full px-6 py-4 flex items-center justify-between">
-        {/* ... (você pode adicionar um título aqui mais tarde) ... */}
-      </div>
+    <div className="relative w-full h-full">
+      
+      {/* --- 1. FILTROS SUPERIORES (Estilo Horizontal Clean) --- */}
+      <div className="absolute top-4 left-0 right-0 z-[1000] px-4">
+        {/* Adicionei 'style' para garantir que a barra de rolagem suma mesmo sem plugin */}
+        <div 
+          className="flex gap-3 overflow-x-auto pb-2"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} 
+        >
+          {/* Hack para esconder scrollbar no Chrome/Safari */}
+          <style>{`
+            div::-webkit-scrollbar { display: none; }
+          `}</style>
 
-      {/* Container do mapa */}
-      <div
-        className="relative w-full flex-1"
-        style={{ minHeight: '520px', padding: 24 }}
-      >
-        <div className="w-full h-full rounded-xl overflow-hidden shadow-md">
-          {/* Usamos MapContainer diretamente
-          */}
-          <MapContainer
-            center={leafletCenter}
-            zoom={13}
-            style={{ height: '100%', width: '100%' }}
-            whenReady={onMapReady} // Prop correta para executar quando o mapa carregar
-            zoomControl={true}
-          >
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            />
-            {/* O Marcador (Marker) agora é um filho direto do MapContainer */}
-            <Marker position={leafletCenter}>
-              <Popup>Marcador clicável — Recife (padrão)</Popup>
-            </Marker>
-          </MapContainer>
+          {categorias.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setFiltroAtivo(cat)}
+              className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold shadow-md transition-all border 
+                ${filtroAtivo === cat 
+                  ? 'bg-[#00bcd4] text-white border-[#00bcd4]' // Estilo Ativo (Azul Ciano)
+                  : 'bg-white text-gray-600 border-gray-100 hover:bg-gray-50' // Estilo Inativo
+                }`}
+            >
+              {cat}
+            </button>
+          ))}
         </div>
-
-        {/* Botões flutuantes */}
-        <button
-          className="absolute bottom-6 left-6 z-20 bg-white p-3 rounded-full shadow-lg text-gray-700 hover:bg-gray-50 transition"
-          aria-label="Centralizar mapa"
-          title="Centralizar mapa"
-          onClick={() => {
-            console.log('Centralizar mapa clicado');
-          }}
-        >
-          <FiTarget size={20} />
-        </button>
-
-        <button
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-5 rounded-full shadow-lg transition"
-          aria-label="Adicionar local"
-          title="Adicionar local"
-          onClick={() => navigate('/app/adicionar-local')}
-        >
-          <FiPlus size={18} />
-          Adicionar local
-        </button>
       </div>
 
-      {/* Espaço reservado */}
-      <div className="w-full px-6 py-6">
-      </div>
+      {/* --- 2. MAPA (Fundo) --- */}
+      <LeafletMap>
+        <LeafletMarkers 
+          markers={markersFiltrados} 
+          onMarkerClick={handleMarkerClick}
+        />
+      </LeafletMap>
+
+      {/* --- 3. BOTÃO FLUTUANTE ADICIONAR (+) --- */}
+      <button
+        onClick={() => navigate('/app/adicionar-local')}
+        className="fixed bottom-24 left-1/2 transform -translate-x-1/2 z-[1000] 
+                   bg-[#ff7a00] text-white rounded-full w-16 h-16 
+                   flex items-center justify-center shadow-xl 
+                   hover:scale-110 hover:bg-[#e56d00] active:scale-95 transition-all duration-300
+                   border-4 border-white"
+        aria-label="Adicionar novo local"
+      >
+        <FiPlus size={32} />
+      </button>
+
     </div>
   );
 }
-export default Home;
