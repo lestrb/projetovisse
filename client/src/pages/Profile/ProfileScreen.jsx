@@ -56,8 +56,8 @@ const ProfileScreen = () => {
     
       // Funções usadas para a navegação e as ações dos botões
       const handleNavigateToFavorites = () => navigate('/app/favoritos');
-      const handleEdit = () => console.log('Editar perfil');
-      const handleSettings = () => console.log('Configurações');
+      const handleEdit = () => navigate('/app/perfil/editar');
+      const handleSettings = () => navigate('/app/configuracoes');
       // Função de logout, removendo o token e redirecionando para a tela de login
       const handleLogout = () => { 
         localStorage.removeItem('userToken');
