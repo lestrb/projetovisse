@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiPlus } from 'react-icons/fi';
 
-// Ajuste os caminhos se necessário
 import LeafletMap from '../../components/Map/LeafletMap';
 import LeafletMarkers from '../../components/Map/LeafletMarkers';
 
@@ -10,7 +9,7 @@ export default function MapScreen() {
   const navigate = useNavigate();
   const [filtroAtivo, setFiltroAtivo] = useState('Todos');
 
-  // Categorias do seu projeto
+  // Categorias
   const categorias = [
     'Todos',
     'Bares',
@@ -69,14 +68,12 @@ export default function MapScreen() {
   return (
     <div className="relative w-full h-full">
       
-      {/* --- 1. FILTROS SUPERIORES (Estilo Horizontal Clean) --- */}
+      {/* FILTROS SUPERIORES */}
       <div className="absolute top-4 left-0 right-0 z-[1000] px-4">
-        {/* Adicionei 'style' para garantir que a barra de rolagem suma mesmo sem plugin */}
         <div 
           className="flex gap-3 overflow-x-auto pb-2"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} 
         >
-          {/* Hack para esconder scrollbar no Chrome/Safari */}
           <style>{`
             div::-webkit-scrollbar { display: none; }
           `}</style>
@@ -97,7 +94,7 @@ export default function MapScreen() {
         </div>
       </div>
 
-      {/* --- 2. MAPA (Fundo) --- */}
+      {/* MAPA (fundo) */}
       <LeafletMap>
         <LeafletMarkers 
           markers={markersFiltrados} 
@@ -105,7 +102,7 @@ export default function MapScreen() {
         />
       </LeafletMap>
 
-      {/* --- 3. BOTÃO FLUTUANTE ADICIONAR (+) --- */}
+      {/*BOTÃO DE ADICIONAR (+) */}
       <button
         onClick={() => navigate('/app/adicionar-local')}
         className="fixed bottom-24 left-1/2 transform -translate-x-1/2 z-[1000] 
