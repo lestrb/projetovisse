@@ -1,0 +1,206 @@
+[
+    {
+        "id": 10353,
+        "uuid": "551ea5df-09c0-41ce-af16-72c094fea209",
+        "name": "Validação ",
+        "description": "Validação ",
+        "collective": false,
+        "coinsPerLevel": 15,
+        "smallCoverFile": null,
+        "smallCoverUrl": "https://gamificacao.homolog.app.emprel.gov.br/public/challenges/551ea5df-09c0-41ce-af16-72c094fea209/small-cover-551ea5df-09c0-41ce-af16-72c094fea209.png",
+        "coverFile": null,
+        "coverUrl": "",
+        "bannerFile": null,
+        "bannerUrl": "",
+        "stampFile": null,
+        "stampUrl": "https://gamificacao.homolog.app.emprel.gov.br/public/challenges/551ea5df-09c0-41ce-af16-72c094fea209/stamp-551ea5df-09c0-41ce-af16-72c094fea209.png",
+        "deadline": null,
+        "disabledAt": null,
+        "categories": [
+            {
+                "id": 1101,
+                "uuid": "279b713e-d485-4e74-acd4-c26cbaebd59e",
+                "name": "Conecta",
+                "deletedAt": null
+            }
+        ],
+        "userChallenge": null,
+        "requirements": [
+            {
+                "id": 10306,
+                "uuid": "c7a7c7c2-a0cc-4de7-aabf-6a9287068df7",
+                "deletedAt": null,
+                "name": "ari",
+                "quantityPerLevel": 1,
+                "coinsPerAction": 1,
+                "action": {
+                    "id": 10202,
+                    "uuid": "14bc83af-74a8-4fb1-8c42-ba41bf1fd0f9",
+                    "name": "Variavel 2",
+                    "actionType": "CHECK_IN",
+                    "variableEffort": true,
+                    "unitMeasurement": "Litro",
+                    "unitMeasurementPlural": "Litros",
+                    "externalAppLink": null,
+                    "iosExternalAppLink": null,
+                    "externalAppLinkLabel": null,
+                    "deletedAt": null,
+                    "latitude": -8.056263,
+                    "longitude": -34.890319,
+                    "radius": null,
+                    "address": null,
+                    "instructions": [
+                        {
+                            "id": 10252,
+                            "description": "Vá na unidade mais próxima do coleta seletiva e descarte seu óleo da forma correta "
+                        }
+                    ]
+                },
+                "progressionType": "STANDARD",
+                "progressionFactor": 1,
+                "maxRequirementLevel": null,
+                "currentLevelProgress": 0,
+                "quantityCurrentLevel": 1
+            }
+        ],
+        "collectiveRequirementsSum": null,
+        "collectiveProgress": null,
+        "maxLevel": null
+    },
+    {
+        "id": 10354,
+        "uuid": "4a84c412-9001-4b24-ab3e-70bf6f77d48f",
+        "name": "Permanente",
+        "description": "Permanente",
+        "collective": false,
+        "coinsPerLevel": 1,
+        "smallCoverFile": null,
+        "smallCoverUrl": "https://gamificacao.homolog.app.emprel.gov.br/public/challenges/4a84c412-9001-4b24-ab3e-70bf6f77d48f/small-cover-4a84c412-9001-4b24-ab3e-70bf6f77d48f.png",
+        "coverFile": null,
+        "coverUrl": "",
+        "bannerFile": null,
+        "bannerUrl": "",
+        "stampFile": null,
+        "stampUrl": "https://gamificacao.homolog.app.emprel.gov.br/public/challenges/4a84c412-9001-4b24-ab3e-70bf6f77d48f/stamp-4a84c412-9001-4b24-ab3e-70bf6f77d48f.png",
+        "deadline": null,
+        "disabledAt": null,
+        "categories": [
+            {
+                "id": 1101,
+                "uuid": "279b713e-d485-4e74-acd4-c26cbaebd59e",
+                "name": "Conecta",
+                "deletedAt": null
+            }
+        ],
+        "userChallenge": null,
+        "requirements": [
+            {
+                "id": 10307,
+                "uuid": "d12c49a6-359c-4388-979f-989feef0452c",
+                "deletedAt": null,
+                "name": "compart",
+                "quantityPerLevel": 3,
+                "coinsPerAction": 1,
+                "action": {
+                    "id": 10201,
+                    "uuid": "0a1c0abb-8be4-466f-bc44-683ebae21b69",
+                    "name": "Compartilhamento",
+                    "actionType": "SHARE",
+                    "variableEffort": false,
+                    "unitMeasurement": null,
+                    "unitMeasurementPlural": null,
+                    "externalAppLink": "https://play.google.com/store/apps/details?id=br.gov.pe.recife.conecta&hl=pt_BR&gl=US",
+                    "iosExternalAppLink": "https://apps.apple.com/br/app/conecta-recife-app/id1469109191",
+                    "externalAppLinkLabel": "Compartilhe",
+                    "deletedAt": null,
+                    "latitude": -8.056263,
+                    "longitude": -34.890319,
+                    "radius": null,
+                    "address": null,
+                    "instructions": [
+                        {
+                            "id": 10251,
+                            "description": "Compartilhe o objetivo com seus amigos e ganhe capibas"
+                        }
+                    ]
+                },
+                "progressionType": "STANDARD",
+                "progressionFactor": 1,
+                "maxRequirementLevel": null,
+                "currentLevelProgress": 0,
+                "quantityCurrentLevel": 3
+            }
+        ],
+        "collectiveRequirementsSum": null,
+        "collectiveProgress": null,
+        "maxLevel": null
+    },
+    {
+        "id": 11851,
+        "uuid": "3c45ad5c-4313-475e-8124-9501940774d6",
+        "name": "a",
+        "description": "a",
+        "collective": false,
+        "coinsPerLevel": 1,
+        "smallCoverFile": null,
+        "smallCoverUrl": "https://gamificacao.homolog.app.emprel.gov.br/public/challenges/3c45ad5c-4313-475e-8124-9501940774d6/small-cover-3c45ad5c-4313-475e-8124-9501940774d6.png",
+        "coverFile": null,
+        "coverUrl": "",
+        "bannerFile": null,
+        "bannerUrl": "",
+        "stampFile": null,
+        "stampUrl": "https://gamificacao.homolog.app.emprel.gov.br/public/challenges/3c45ad5c-4313-475e-8124-9501940774d6/stamp-3c45ad5c-4313-475e-8124-9501940774d6.png",
+        "deadline": null,
+        "disabledAt": null,
+        "categories": [
+            {
+                "id": 1101,
+                "uuid": "279b713e-d485-4e74-acd4-c26cbaebd59e",
+                "name": "Conecta",
+                "deletedAt": null
+            }
+        ],
+        "userChallenge": null,
+        "requirements": [
+            {
+                "id": 11801,
+                "uuid": "fcc2937b-bdc6-4eb8-b570-958757601551",
+                "deletedAt": null,
+                "name": "a",
+                "quantityPerLevel": 1,
+                "coinsPerAction": 1,
+                "action": {
+                    "id": 10202,
+                    "uuid": "14bc83af-74a8-4fb1-8c42-ba41bf1fd0f9",
+                    "name": "Variavel 2",
+                    "actionType": "CHECK_IN",
+                    "variableEffort": true,
+                    "unitMeasurement": "Litro",
+                    "unitMeasurementPlural": "Litros",
+                    "externalAppLink": null,
+                    "iosExternalAppLink": null,
+                    "externalAppLinkLabel": null,
+                    "deletedAt": null,
+                    "latitude": -8.056263,
+                    "longitude": -34.890319,
+                    "radius": null,
+                    "address": null,
+                    "instructions": [
+                        {
+                            "id": 10252,
+                            "description": "Vá na unidade mais próxima do coleta seletiva e descarte seu óleo da forma correta "
+                        }
+                    ]
+                },
+                "progressionType": "STANDARD",
+                "progressionFactor": 1,
+                "maxRequirementLevel": null,
+                "currentLevelProgress": 0,
+                "quantityCurrentLevel": 1
+            }
+        ],
+        "collectiveRequirementsSum": null,
+        "collectiveProgress": null,
+        "maxLevel": null
+    }
+]
