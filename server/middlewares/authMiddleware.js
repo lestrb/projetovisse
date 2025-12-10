@@ -25,9 +25,9 @@ const authMiddleware = async (req, res, next) => {
 
             const capibaData = response.data;
             
-            // Busca usuário no banco local pelo document/CPF
+            // Busca usuário no banco local pelo cpf/CPF
             const usuarioLocal = await Usuario.findOne({ 
-                document: capibaData.document 
+                cpf: capibaData.cpf 
             });
 
             if (!usuarioLocal) {
@@ -41,7 +41,7 @@ const authMiddleware = async (req, res, next) => {
                 _id: usuarioLocal._id, // ID do MongoDB (para relacionamentos)
                 capiba_id: usuarioLocal.capiba_id,
                 nome: usuarioLocal.nome,
-                document: usuarioLocal.document,
+                cpf: usuarioLocal.cpf,
                 email: usuarioLocal.email,
                 // Dados atualizados da API Capiba
                 balance: capibaData.balance,

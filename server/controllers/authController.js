@@ -18,7 +18,7 @@ export const login = async (req, res) => {
             });
         }
 
-        // 1. Faz login na API 
+        // Faz login na API 
         const response = await axios.post(CAPIBA_AUTH_URL, {
             username: cpf,
             password: senha
@@ -30,7 +30,7 @@ export const login = async (req, res) => {
 
         const { access_token } = response.data;
 
-        // 2. Busca dados do usuário na API 
+        // Busca dados do usuário na API 
         let capibaUserData = null;
         try {
             const userResponse = await axios.get(`${CAPIBA_API_URL}/self`, {
@@ -46,9 +46,9 @@ export const login = async (req, res) => {
             });
         }
 
-        // 3. Verifica se usuário já existe no nosso banco
+        // Verifica se usuário já existe no nosso banco
         let usuarioLocal = await Usuario.findOne({ 
-            document: cpf 
+            cpf: cpf 
         });
 
         if (usuarioLocal) {
@@ -58,10 +58,10 @@ export const login = async (req, res) => {
             
             await usuarioLocal.save();
         } else {
-            // 4. Cria novo usuário no nosso banco 
+            // Cria novo usuário no nosso banco 
             usuarioLocal = new Usuario({
                 capiba_id: String(capibaUserData.id),
-                document: cpf,
+                cpf: cpf,
                 nome: capibaUserData.name,
                 email: capibaUserData.email
             });
@@ -69,7 +69,7 @@ export const login = async (req, res) => {
             await usuarioLocal.save();
         }
 
-        // 5. Retorna token e dados
+        // Retorna token e dados
         res.json({
             message: "Login realizado com sucesso!",
             token: access_token,
@@ -78,7 +78,7 @@ export const login = async (req, res) => {
                 capiba_id: usuarioLocal.capiba_id,
                 nome: usuarioLocal.nome,
                 email: usuarioLocal.email,
-                document: usuarioLocal.document,
+                cpf: usuarioLocal.cpf,
                 balance: capibaUserData.balance,
                 newAchievements: capibaUserData.newAchievements
             }
