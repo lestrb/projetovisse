@@ -4,11 +4,12 @@ import geocodeAddress from '../services/geocodingService.js';
 import { adicionarPontos } from './pontuacaoController.js';
 import fs from 'fs';
 
-// CRIAR LOCAL 
+// CRIAR LOCAL (Versão: Endereço Manual)
 export const createLocal = async (req, res) => {
     try {
         const autor_id = req.usuario._id;
-        const {
+        
+        let {
             nome,
             descricao,
             tipo,
@@ -18,41 +19,39 @@ export const createLocal = async (req, res) => {
 
         const forcarCriacao = forceCreate === true || forceCreate === 'true';
 
-        // Valida campos obrigatórios
+        // Endereço é obrigatório
         if (!nome || !descricao || !tipo || !endereco) { 
-            // Remove arquivo se foi feito upload mas deu erro
+            // Se o usuário mandou foto mas esqueceu campos, deletamos a foto para não acumular lixo
             if (req.file) {
                 fs.unlinkSync(req.file.path);
             }
             return res.status(400).json({ 
-                message: "Dados incompletos. Verifique os campos obrigatórios." 
+                message: "Dados incompletos. Nome, descrição, tipo e endereço são obrigatórios." 
             });
         }
 
-        if (!mongoose.Types.ObjectId.isValid(autor_id)) {
-            if (req.file) {
-                fs.unlinkSync(req.file.path);
-            }
-            return res.status(400).json({ message: "autor_id inválido." });
-        }
-
-        // Geocoding
+        // Geocoding: Transformar "Texto" em "Coordenadas"
         let latitude, longitude;
         try {
+            // Chama o serviço do Nominatim
             const coords = await geocodeAddress(endereco);
+            
             latitude = coords.latitude;
             longitude = coords.longitude;
+            
         } catch (geocodeError) {
+            // Se o endereço não existe, apagamos a foto e avisamos
             if (req.file) {
                 fs.unlinkSync(req.file.path);
             }
             return res.status(400).json({
-                message: geocodeError.message,
-                sugestao: "Tente adicionar bairro, cidade e estado."
+                message: "Endereço não encontrado ou inválido.",
+                detalhe: geocodeError.message,
+                sugestao: "Tente colocar: Rua, Número e Bairro (ex: Rua do Sol, Recife)"
             });
         }
 
-        // Verifica local existente
+        // Procura locais num raio de +/- 0.001 graus (aprox. 100 metros)
         const localExistente = await Local.findOne({
             latitude: { $gte: latitude - 0.001, $lte: latitude + 0.001 },
             longitude: { $gte: longitude - 0.001, $lte: longitude + 0.001 }
@@ -74,12 +73,12 @@ export const createLocal = async (req, res) => {
             });
         }
 
-        // URL da imagem (se foi feito upload)
+        // Preparar Imagem
         const imagem_url = req.file 
             ? `/uploads/locais/${req.file.filename}` 
             : null;
 
-        // Cria o local
+        // Salvar no Banco
         const novoLocal = new Local({
             nome,
             descricao,
@@ -87,14 +86,14 @@ export const createLocal = async (req, res) => {
             curtidas: [],
             imagem_url,
             autor_id,
-            endereco,
-            latitude,
-            longitude,
+            endereco,  // O texto digitado
+            latitude,  // Calculado pelo Geocoding
+            longitude, // Calculado pelo Geocoding
         });
 
         await novoLocal.save();
 
-        // Dar pontos
+        // Gamificação: Dar pontos ao usuário
         try {
             await adicionarPontos(autor_id, 'CADASTRAR_LOCAL', {
                 local_id: novoLocal._id,
@@ -102,6 +101,7 @@ export const createLocal = async (req, res) => {
             });
         } catch (pontoError) {
             console.error('Erro ao adicionar pontos:', pontoError);
+            // Não bloqueamos o cadastro se der erro nos pontos, apenas logamos
         }
 
         return res.status(201).json({ 
@@ -113,15 +113,8 @@ export const createLocal = async (req, res) => {
     } catch (error) {
         console.error("Erro ao criar local:", error);
         
-        // Remove arquivo em caso de erro
         if (req.file) {
             fs.unlinkSync(req.file.path);
-        }
-
-        if (error.code === 11000) {
-            return res.status(409).json({ 
-                message: "Já existe um local cadastrado com esses dados."
-            });
         }
         
         return res.status(500).json({ 
@@ -131,7 +124,7 @@ export const createLocal = async (req, res) => {
     }
 };
 
-// ATUALIZAR LOCAL 
+// ATUALIZAR LOCAL
 export const updateLocal = async (req, res) => {
     try {
         const { id } = req.params;
@@ -150,6 +143,7 @@ export const updateLocal = async (req, res) => {
             return res.status(404).json({ message: "Local não encontrado." });
         }
 
+        // Verifica permissão
         if (local.autor_id.toString() !== autor_id.toString()) {
             if (req.file) fs.unlinkSync(req.file.path);
             return res.status(403).json({ 
@@ -157,14 +151,13 @@ export const updateLocal = async (req, res) => {
             });
         }
 
-        // Atualiza campos
+        // Atualiza campos simples
         if (nome) local.nome = nome;
         if (descricao) local.descricao = descricao;
         if (tipo) local.tipo = tipo;
 
-        // Se enviou nova imagem, deleta a antiga e salva a nova
+        // Atualiza imagem
         if (req.file) {
-            // Deleta imagem antiga se existir
             if (local.imagem_url) {
                 const oldImagePath = `.${local.imagem_url}`;
                 if (fs.existsSync(oldImagePath)) {
@@ -174,7 +167,7 @@ export const updateLocal = async (req, res) => {
             local.imagem_url = `/uploads/locais/${req.file.filename}`;
         }
 
-        // Atualiza endereço e coordenadas
+        // Atualiza endereço
         if (endereco && endereco !== local.endereco) {
             try {
                 const coords = await geocodeAddress(endereco);
@@ -228,7 +221,6 @@ export const deleteLocal = async (req, res) => {
             });
         }
 
-        // Remove imagem se existir
         if (local.imagem_url) {
             const imagePath = `.${local.imagem_url}`;
             if (fs.existsSync(imagePath)) {
@@ -250,30 +242,23 @@ export const deleteLocal = async (req, res) => {
     }
 };
 
-// Curtir local 
+// CURTIR LOCAL 
 export const curtirLocal = async (req, res) => {
     try {
         const { id } = req.params;
         const usuario_id = req.usuario._id;
-
-        console.log('DEBUG CURTIR');
-        console.log('ID do local:', id);
-        console.log('Usuario ID:', usuario_id);
-        console.log('Usuario completo:', req.usuario);
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ message: "ID do local invalido." });
         }
 
         const local = await Local.findById(id);
-        console.log('Local encontrado:', local ? 'SIM' : 'NAO');
 
         if (!local) {
             return res.status(404).json({ message: "Local nao encontrado." });
         }
 
         const jaCurtiu = local.curtidas.some(curtida => curtida.equals(usuario_id));
-        console.log('Ja curtiu?', jaCurtiu);
 
         if (jaCurtiu) {
             local.curtidas = local.curtidas.filter(c => !c.equals(usuario_id));
@@ -287,21 +272,16 @@ export const curtirLocal = async (req, res) => {
         } else {
             local.curtidas.push(usuario_id);
             await local.save();
-            console.log('Curtida adicionada. Total:', local.curtidas.length);
 
-            // So adiciona pontos se nao for o proprio autor curtindo
+            // Dar pontos ao dono do local (se não for ele mesmo)
             if (!local.autor_id.equals(usuario_id)) {
-                console.log('Adicionando pontos ao dono do local...');
                 try {
                     await adicionarPontos(local.autor_id, 'RECEBER_CURTIDA', {
                         local_id: local._id
                     });
-                    console.log('Pontos adicionados com sucesso');
                 } catch (e) {
                     console.error('Erro ao adicionar pontos ao dono:', e);
                 }
-            } else {
-                console.log('Autor curtiu o proprio local - nao ganha pontos');
             }
 
             return res.json({ 
@@ -312,16 +292,10 @@ export const curtirLocal = async (req, res) => {
         }
 
     } catch (error) {
-        console.error("ERRO AO CURTIR");
-        console.error("Mensagem:", error.message);
-        console.error("Stack:", error.stack);
-        return res.status(500).json({ 
-            message: "Erro ao processar curtida.",
-            erro: error.message // ADICIONAR DETALHE DO ERRO
-        });
+        console.error("Erro ao curtir:", error);
+        return res.status(500).json({ message: "Erro ao processar curtida." });
     }
 };
-
 
 export const getAllLocais = async (req, res) => {
     try {
@@ -338,10 +312,10 @@ export const getLocalById = async (req, res) => {
         const { id } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: "ID do local inválido." });
+            return res.status(400).json({ message: "ID inválido." });
         }
 
-        const local = await Local.findById(id);
+        const local = await Local.findById(id); // Removi o populate dos comentarios pra simplificar se der erro
 
         if (!local) {
             return res.status(404).json({ message: "Local não encontrado." });
