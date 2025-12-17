@@ -36,14 +36,13 @@ export default function Login() {
       </header>
 
       {/* Adicionar campos de input reais no lugar do texto estático */}
-      <form className="login-form" onSubmit={handleLogin} style={{display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', maxWidth: '400px'}}>
+      <form className="login-form" onSubmit={handleLogin}>
         <input 
           type="text" 
           placeholder="CPF (apenas números)" 
           value={cpf}
           onChange={e => setCpf(e.target.value)}
           className="input-login"
-          style={{padding: '12px', borderRadius: '8px', border: '1px solid #ccc'}}
         />
         <input 
           type="password" 
@@ -51,12 +50,11 @@ export default function Login() {
           value={senha}
           onChange={e => setSenha(e.target.value)}
           className="input-login"
-          style={{padding: '12px', borderRadius: '8px', border: '1px solid #ccc'}}
         />
         
-        {erro && <p style={{color: 'red', fontSize: '0.9rem'}}>{erro}</p>}
+        {erro && <p className="error-message">{erro}</p>}
 
-        <footer className="login-footer" style={{marginTop: '20px'}}>
+        <footer className="login-footer login-footer-extra">
           <button type="submit" className="login-button" disabled={loading}>
             {loading ? 'Entrando...' : 'Entrar com Conecta Recife'}
           </button>
