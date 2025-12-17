@@ -1,7 +1,7 @@
 import Comentario from '../models/Comentario.js';
 import Local from '../models/Local.js';
 import mongoose from 'mongoose';
-import { adicionarPontos } from './pontuacaoController.js';
+import { adicionarPontos, PONTOS } from './pontuacaoController.js';
 
 // CRIAR COMENTÁRIO
 export const criarComentario = async (req, res) => {
@@ -53,17 +53,18 @@ export const criarComentario = async (req, res) => {
             });
 
             await adicionarPontos(local.autor_id, 'RECEBER_COMENTARIO', {  
-                local_id: local._id, descricao: `Recebeu comentario no local "${local.nome}"`
+                local_id: local._id, 
+                descricao: `Recebeu comentário no local "${local.nome}"`
             });
 
         } catch (pontoError) {
             console.error('Erro ao adicionar pontos:', pontoError);
         }
 
-        res.status(201).json({
-            message: "Comentário publicado! Você ganhou 10 pontos! ",
+        return res.status(201).json({
+            message: `Comentário publicado! Você ganhou ${PONTOS.COMENTAR} pontos Visse!`,
             comentario,
-            pontos_ganhos: 3
+            pontos_ganhos: PONTOS.COMENTAR
         });
 
     } catch (error) {
@@ -74,8 +75,6 @@ export const criarComentario = async (req, res) => {
         });
     }
 };
-
-
 
 // LISTAR COMENTÁRIOS DE UM LOCAL
 export const listarComentarios = async (req, res) => {

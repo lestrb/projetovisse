@@ -1,8 +1,11 @@
 import Local from '../models/Local.js';
 import mongoose from 'mongoose';
 import geocodeAddress from '../services/geocodingService.js';
-import { adicionarPontos } from './pontuacaoController.js';
+import { adicionarPontos, PONTOS } from './pontuacaoController.js'; 
 import fs from 'fs';
+
+// 0.001 graus é aproximadamente 111 metros na linha do equador
+const RAIO_BUSCA_COORD = 0.001;
 
 // Funções auxiliares 
 // Limpar arquivos temporários
@@ -66,8 +69,8 @@ export const createLocal = async (req, res) => {
 
         // Procura locais num raio de +/- 0.001 graus (aprox. 100 metros)
         const localExistente = await Local.findOne({
-            latitude: { $gte: latitude - 0.001, $lte: latitude + 0.001 },
-            longitude: { $gte: longitude - 0.001, $lte: longitude + 0.001 }
+            latitude: { $gte: latitude - RAIO_BUSCA_COORD, $lte: latitude + RAIO_BUSCA_COORD },
+            longitude: { $gte: longitude - RAIO_BUSCA_COORD, $lte: longitude + RAIO_BUSCA_COORD }
         });
 
         if (localExistente && !forcarCriacao) {
@@ -115,17 +118,16 @@ export const createLocal = async (req, res) => {
             // Não bloqueamos o cadastro se der erro nos pontos, apenas logamos
         }
 
+        const pontosGanhos = PONTOS.CADASTRAR_LOCAL;
         return res.status(201).json({ 
-            message: "Local criado com sucesso! Você ganhou 50 pontos Visse! 🎉", 
+            message: `Local criado com sucesso! Você ganhou ${pontosGanhos} pontos Visse!`, 
             local: novoLocal,
-            pontos_ganhos: 50
+            pontos_ganhos: pontosGanhos
         });
 
     } catch (error) {
         console.error("Erro ao criar local:", error);
-        
         deletarArquivoTemporario(req.file);
-        
         return res.status(500).json({ 
             message: "Erro interno do servidor.", 
             error: error.message 

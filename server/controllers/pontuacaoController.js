@@ -1,8 +1,8 @@
 import Pontuacao from '../models/Pontuacao.js';
 import { capibaCheckIn } from '../services/capibaIntegrationService.js';
 
-// Tabela de pontuação
-const PONTOS = {
+// Tabela de pontuação (é exportada para uso em outros módulos)
+export const PONTOS = {
     CADASTRAR_LOCAL: 50,
     COMENTAR: 3,
     RECEBER_CURTIDA: 3,
@@ -12,6 +12,10 @@ const PONTOS = {
 // 10 pontos Visse = 7 Capibas
 const TAXA_CONVERSAO = 0.7;
 const MIN_PONTOS_CONVERSAO = 10;
+const COORD_PADRAO_RECIFE = {
+    LAT: -8.0476,
+    LONG: -34.8770
+};
 
 // Adicionar pontos ao usuário
 export const adicionarPontos = async (usuario_id, acao, detalhes = {}) => {
@@ -102,8 +106,8 @@ export const converterParaCapiba = async (req, res) => {
             rua: 'Plataforma Visse',
             identifier: `visse-conversao-${Date.now()}`,
             document: req.usuario.cpf,
-            latitude: latitude || -8.0476,
-            longitude: longitude || -34.8770,
+            latitude: latitude || COORD_PADRAO_RECIFE.LAT,
+            longitude: longitude || COORD_PADRAO_RECIFE.LONG,
             eventDescription: `Conversão de ${pontos_converter} pontos Visse em ${capibas_ganhar} Capibas`,
             quantity: capibas_ganhar // Quantidade de pontos Capiba
         };
