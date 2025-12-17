@@ -4,6 +4,23 @@ import geocodeAddress from '../services/geocodingService.js';
 import { adicionarPontos } from './pontuacaoController.js';
 import fs from 'fs';
 
+// Funções auxiliares 
+// Limpar arquivos temporários
+const deletarArquivoTemporario = (file) => {
+    if (file && file.path) {
+        fs.unlinkSync(file.path);
+    }
+};
+
+// Remover imagem quando um local é atualizado ou deletado
+const deletarImagemDoServidor = (caminhoRelativo) => {
+    if (!caminhoRelativo) return;
+    const pathCompleto = `.${caminhoRelativo}`;
+    if (fs.existsSync(pathCompleto)) {
+        fs.unlinkSync(pathCompleto);
+    }
+};
+
 // CRIAR LOCAL (Versão: Endereço Manual)
 export const createLocal = async (req, res) => {
     try {
@@ -22,9 +39,7 @@ export const createLocal = async (req, res) => {
         // Endereço é obrigatório
         if (!nome || !descricao || !tipo || !endereco) { 
             // Se o usuário mandou foto mas esqueceu campos, deletamos a foto para não acumular lixo
-            if (req.file) {
-                fs.unlinkSync(req.file.path);
-            }
+            deletarArquivoTemporario(req.file);
             return res.status(400).json({ 
                 message: "Dados incompletos. Nome, descrição, tipo e endereço são obrigatórios." 
             });
@@ -41,9 +56,7 @@ export const createLocal = async (req, res) => {
             
         } catch (geocodeError) {
             // Se o endereço não existe, apagamos a foto e avisamos
-            if (req.file) {
-                fs.unlinkSync(req.file.path);
-            }
+            deletarArquivoTemporario(req.file);
             return res.status(400).json({
                 message: "Endereço não encontrado ou inválido.",
                 detalhe: geocodeError.message,
@@ -58,9 +71,7 @@ export const createLocal = async (req, res) => {
         });
 
         if (localExistente && !forcarCriacao) {
-            if (req.file) {
-                fs.unlinkSync(req.file.path);
-            }
+            deletarArquivoTemporario(req.file);
             return res.status(409).json({ 
                 message: `Já existe um local nesse endereço: "${localExistente.nome}"`,
                 localExistente: {
@@ -113,9 +124,7 @@ export const createLocal = async (req, res) => {
     } catch (error) {
         console.error("Erro ao criar local:", error);
         
-        if (req.file) {
-            fs.unlinkSync(req.file.path);
-        }
+        deletarArquivoTemporario(req.file);
         
         return res.status(500).json({ 
             message: "Erro interno do servidor.", 
@@ -132,20 +141,20 @@ export const updateLocal = async (req, res) => {
         const { nome, descricao, tipo, endereco } = req.body;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            if (req.file) fs.unlinkSync(req.file.path);
+            deletarArquivoTemporario(req.file);
             return res.status(400).json({ message: "ID inválido." });
         }
 
         const local = await Local.findById(id);
 
         if (!local) {
-            if (req.file) fs.unlinkSync(req.file.path);
+            deletarArquivoTemporario(req.file);
             return res.status(404).json({ message: "Local não encontrado." });
         }
 
         // Verifica permissão
         if (local.autor_id.toString() !== autor_id.toString()) {
-            if (req.file) fs.unlinkSync(req.file.path);
+            deletarArquivoTemporario(req.file);
             return res.status(403).json({ 
                 message: "Você não tem permissão para editar este local." 
             });
@@ -159,10 +168,7 @@ export const updateLocal = async (req, res) => {
         // Atualiza imagem
         if (req.file) {
             if (local.imagem_url) {
-                const oldImagePath = `.${local.imagem_url}`;
-                if (fs.existsSync(oldImagePath)) {
-                    fs.unlinkSync(oldImagePath);
-                }
+                deletarImagemDoServidor(local.imagem_url);
             }
             local.imagem_url = `/uploads/locais/${req.file.filename}`;
         }
@@ -175,7 +181,7 @@ export const updateLocal = async (req, res) => {
                 local.latitude = coords.latitude;
                 local.longitude = coords.longitude;
             } catch (geocodeError) {
-                if (req.file) fs.unlinkSync(req.file.path);
+                deletarArquivoTemporario(req.file);
                 return res.status(400).json({
                     message: "Erro ao validar o novo endereço.",
                     detalhe: geocodeError.message
@@ -192,7 +198,7 @@ export const updateLocal = async (req, res) => {
 
     } catch (error) {
         console.error("Erro ao atualizar local:", error);
-        if (req.file) fs.unlinkSync(req.file.path);
+        deletarArquivoTemporario(req.file);
         return res.status(500).json({ 
             message: "Erro interno ao atualizar local." 
         });
@@ -222,10 +228,7 @@ export const deleteLocal = async (req, res) => {
         }
 
         if (local.imagem_url) {
-            const imagePath = `.${local.imagem_url}`;
-            if (fs.existsSync(imagePath)) {
-                fs.unlinkSync(imagePath);
-            }
+            deletarImagemDoServidor(local.imagem_url);
         }
 
         await local.deleteOne();
