@@ -1,5 +1,6 @@
 import Local from '../models/Local.js';
 import mongoose from 'mongoose';
+import * as LocalService from '../services/localService.js';
 import geocodeAddress from '../services/geocodingService.js';
 import { adicionarPontos, PONTOS } from './pontuacaoController.js'; 
 import fs from 'fs';
@@ -27,110 +28,66 @@ const deletarImagemDoServidor = (caminhoRelativo) => {
 // CRIAR LOCAL (Versão: Endereço Manual)
 export const createLocal = async (req, res) => {
     try {
-        const autor_id = req.usuario._id;
-        
-        let {
-            nome,
-            descricao,
-            tipo,
-            endereco, 
-            forceCreate
-        } = req.body;
-
+        const { nome, descricao, tipo, endereco, forceCreate } = req.body;
         const forcarCriacao = forceCreate === true || forceCreate === 'true';
 
-        // Endereço é obrigatório
+        // 1. Validação de Entrada
         if (!nome || !descricao || !tipo || !endereco) { 
-            // Se o usuário mandou foto mas esqueceu campos, deletamos a foto para não acumular lixo
             deletarArquivoTemporario(req.file);
             return res.status(400).json({ 
                 message: "Dados incompletos. Nome, descrição, tipo e endereço são obrigatórios." 
             });
         }
 
-        // Geocoding: Transformar "Texto" em "Coordenadas"
-        let latitude, longitude;
-        try {
-            // Chama o serviço do Nominatim
-            const coords = await geocodeAddress(endereco);
-            
-            latitude = coords.latitude;
-            longitude = coords.longitude;
-            
-        } catch (geocodeError) {
-            // Se o endereço não existe, apagamos a foto e avisamos
-            deletarArquivoTemporario(req.file);
-            return res.status(400).json({
-                message: "Endereço não encontrado ou inválido.",
-                detalhe: geocodeError.message,
-                sugestao: "Tente colocar: Rua, Número e Bairro (ex: Rua do Sol, Recife)"
-            });
-        }
+        // 2. Processamento de Geolocalização 
+        // O Service encapsula a chamada ao Nominatim
+        const coords = await LocalService.processarGeolocalizacao(endereco);
 
-        // Procura locais num raio de +/- 0.001 graus (aprox. 100 metros)
-        const localExistente = await Local.findOne({
-            latitude: { $gte: latitude - RAIO_BUSCA_COORD, $lte: latitude + RAIO_BUSCA_COORD },
-            longitude: { $gte: longitude - RAIO_BUSCA_COORD, $lte: longitude + RAIO_BUSCA_COORD }
-        });
+        // 3. Verificação de Duplicidade 
+        // O Service faz o cálculo do RAIO_BUSCA_COORD (0.001)
+        await LocalService.verificarDuplicidade(coords.latitude, coords.longitude, forcarCriacao);
 
-        if (localExistente && !forcarCriacao) {
-            deletarArquivoTemporario(req.file);
-            return res.status(409).json({ 
-                message: `Já existe um local nesse endereço: "${localExistente.nome}"`,
-                localExistente: {
-                    nome: localExistente.nome,
-                    tipo: localExistente.tipo,
-                    endereco: localExistente.endereco
-                },
-                confirmacaoNecessaria: true,
-                coordenadas: { latitude, longitude }
-            });
-        }
-
-        // Preparar Imagem
-        const imagem_url = req.file 
-            ? `/uploads/locais/${req.file.filename}` 
-            : null;
-
-        // Salvar no Banco
-        const novoLocal = new Local({
+        // 4. Preparação dos dados de persistência
+        const imagem_url = req.file ? `/uploads/locais/${req.file.filename}` : null;
+        
+        const dadosParaSalvar = {
             nome,
             descricao,
             tipo,
-            curtidas: [],
+            endereco,
+            latitude: coords.latitude,
+            longitude: coords.longitude,
             imagem_url,
-            autor_id,
-            endereco,  // O texto digitado
-            latitude,  // Calculado pelo Geocoding
-            longitude, // Calculado pelo Geocoding
-        });
+            autor_id: req.usuario._id
+        };
 
-        await novoLocal.save();
+        // 5. Salvar no Banco
+        const novoLocal = await LocalService.salvarLocal(dadosParaSalvar);
 
-        // Gamificação: Dar pontos ao usuário
+        // 6. Lógica de Gamificação
         try {
-            await adicionarPontos(autor_id, 'CADASTRAR_LOCAL', {
+            await adicionarPontos(req.usuario._id, 'CADASTRAR_LOCAL', {
                 local_id: novoLocal._id,
                 descricao: `Cadastrou o local "${nome}"`
             });
         } catch (pontoError) {
             console.error('Erro ao adicionar pontos:', pontoError);
-            // Não bloqueamos o cadastro se der erro nos pontos, apenas logamos
         }
 
-        const pontosGanhos = PONTOS.CADASTRAR_LOCAL;
         return res.status(201).json({ 
-            message: `Local criado com sucesso! Você ganhou ${pontosGanhos} pontos Visse!`, 
+            message: `Local criado com sucesso! Você ganhou ${PONTOS.CADASTRAR_LOCAL} pontos Visse!`, 
             local: novoLocal,
-            pontos_ganhos: pontosGanhos
+            pontos_ganhos: PONTOS.CADASTRAR_LOCAL
         });
 
     } catch (error) {
-        console.error("Erro ao criar local:", error);
         deletarArquivoTemporario(req.file);
-        return res.status(500).json({ 
-            message: "Erro interno do servidor.", 
-            error: error.message 
+        
+        const status = error.status || 500;
+        return res.status(status).json({
+            message: error.message || "Erro interno do servidor.",
+            detalhe: error.detalhe,
+            localExistente: error.localExistente // Caso retornado pelo verificarDuplicidade
         });
     }
 };
