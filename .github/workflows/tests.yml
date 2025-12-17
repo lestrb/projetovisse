@@ -1,0 +1,50 @@
+# Gitbhub Actions
+name: CI - Automated Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  server-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+      - name: Install Server Dependencies
+        run: |
+          cd server
+          npm install
+      - name: Run Server Tests
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          PORT: ${{ secrets.PORT }}
+        run: |
+          cd server 
+          npm test # Chama o comando node --experimental-vm-modules automaticamente
+        
+  client-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+      - name: Install Client Dependencies
+        run: |
+          cd client
+          npm install
+      - name: Run Client Tests
+        run: |
+          cd client
+          CI=true npm test # Impede que o react-scripts fique esperando input do usuário
