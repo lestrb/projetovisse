@@ -1,8 +1,8 @@
 import axios from 'axios';
+import addressConfig from '../config/addressTypes.json' assert { type: 'json' };
 
 const geocodeAddress = async (endereco) => {
   try {
-    // Requisição para API do OpenStreetMap (Nominatim)
     const response = await axios.get('https://nominatim.openstreetmap.org/search', {
       params: {
         q: endereco,
@@ -25,25 +25,9 @@ const geocodeAddress = async (endereco) => {
     const addressType = result.type || '';
     const addressClass = result.class || '';
 
-    const tiposEspecificos = [
-      'house', 'building', 'residential', 'commercial', 'retail',
-      'road', 'street', 'pedestrian', 'footway', 'path',
-      'museum', 'university', 'school', 'hospital', 'clinic',
-      'restaurant', 'cafe', 'bar', 'shop', 'mall',
-      'park', 'attraction', 'monument', 'memorial',
-      'bus_stop', 'station', 'subway', 'airport',
-      'hotel', 'apartment', 'office', 'church', 'mosque', 'temple'
-    ];
-
-    // Lista de tipos muito genericos que devem ser rejeitados
-    const tiposMuitoGenericos = [
-      'country', 'state', 'region', 'province',
-      'city', 'town', 'village', 'municipality',
-      'administrative'
-    ];
-
-    const isGenerico = tiposMuitoGenericos.includes(addressType) || 
-                       tiposMuitoGenericos.includes(addressClass) ||
+    // Lógica utilizando os dados do arquivo de configuração
+    const isGenerico = addressConfig.genericTypes.includes(addressType) || 
+                       addressConfig.genericTypes.includes(addressClass) ||
                        addressType.includes('administrative');
 
     if (isGenerico) {
@@ -53,11 +37,12 @@ const geocodeAddress = async (endereco) => {
     // verificar se o resultado tem pelo menos um CEP, rua ou ponto específico
     const displayName = result.display_name || '';
     const temCEP = /\d{5}-?\d{3}/.test(displayName);
-    const temNumero = /\d+/.test(endereco); // Verifica se o usuário digitou algum número
-    const isEspecifico = tiposEspecificos.includes(addressType) || 
-                         tiposEspecificos.includes(addressClass);
+    const temNumero = /\d+/.test(endereco); 
+    
+    // Verifica se o tipo ou classe está na lista de específicos do JSON
+    const isEspecifico = addressConfig.specificTypes.includes(addressType) || 
+                         addressConfig.specificTypes.includes(addressClass);
 
-    // Se não é um tipo específico conhecido, não tem CEP e nem número, rejeita
     if (!isEspecifico && !temCEP && !temNumero) {
       throw new Error('Endereço muito genérico. Adicione rua, número ou bairro para maior precisão.');
     }
