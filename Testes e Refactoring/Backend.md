@@ -14,12 +14,23 @@
 
 ## Arquivos
 
-- server/services/geocodingService.js  
-- server/controllers/LocalController.js  
-- server/controllers/pontuacaoController.js  
-- server/tests/regrasNegocio.test.js  
-- server/tests/api.spec.js  
-- server/tests/testEnderecosEspecificos.js  
+**Services:**
+- server/services/geocodingService.js
+- server/services/localService.js
+
+**Controllers:**
+- server/controllers/LocalController.js
+- server/controllers/pontuacaoController.js
+- server/controllers/comentarioController.js
+
+**Routes:**
+- server/routes/LocalRoute.js
+- server/routes/TestRoute.js
+
+**Tests:**
+- server/tests/regrasNegocio.test.js
+- server/tests/api.spec.js
+- server/tests/testEnderecosEspecificos.js
 
 ---
 
