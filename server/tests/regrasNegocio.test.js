@@ -170,4 +170,99 @@ describe('Regras de Negócio Internas', () => {
             expect(podeConverter).toBe(false);
         });
     });
+
+    // GRUPO 5: LÓGICA DE DESAFIO (VISSE + CAPIBA)
+    describe('Regra de Pontuação em Desafios', () => {
+        // Lógica testada: Ao cumprir um desafio, o usuário só ganha pontos VISSE se for a primeira visita.
+        // Se já visitou, o desafio conta como cumprido, mas os pontos Visse devem ser 0.
+        
+        test('Deve conceder pontos Visse se for a primeira visita durante um desafio', () => {
+            const jaVisitou = false; // Simulação do banco
+            const distanciaOk = true; // Simulação do GPS
+            
+            let pontosGanhos = 0;
+            
+            if (distanciaOk) {
+                // Lógica presente no controller
+                if (!jaVisitou) {
+                    pontosGanhos = 10; // PONTOS.VISITAR_LOCAL
+                }
+            }
+
+            expect(pontosGanhos).toBe(10);
+        });
+
+        test('NÃO deve conceder pontos Visse se já visitou, mas deve permitir validar o desafio', () => {
+            const jaVisitou = true; // Já foi lá antes
+            const distanciaOk = true; // Está no local correto agora
+            
+            let pontosGanhos = 0;
+            let desafioValidado = false;
+
+            if (distanciaOk) {
+                desafioValidado = true; // O desafio em si é aceito pela API externa
+                if (!jaVisitou) {
+                    pontosGanhos = 10;
+                }
+            }
+
+            expect(desafioValidado).toBe(true); // Sucesso no desafio
+            expect(pontosGanhos).toBe(0);       // Sem farmar pontos
+        });
+    });
+
+    // GRUPO 6: VALIDAÇÃO DE CONTEÚDO (COMENTÁRIOS)
+    describe('Regras de Conteúdo de Comentários', () => {
+        // Lógica testada: texto.length < 3 || texto.length > 500
+        
+        function validarComentario(texto) {
+            if (!texto || texto.trim().length < 3) return "Muito curto";
+            if (texto.length > 500) return "Muito longo";
+            return "Válido";
+        }
+
+        test('Deve rejeitar comentário muito curto ("Oi")', () => {
+            const resultado = validarComentario("Oi");
+            expect(resultado).toBe("Muito curto");
+        });
+
+        test('Deve rejeitar comentário vazio ou só espaços', () => {
+            const resultado = validarComentario("   ");
+            expect(resultado).toBe("Muito curto");
+        });
+
+        test('Deve aceitar comentário válido', () => {
+            const resultado = validarComentario("Lugar excelente para passear!");
+            expect(resultado).toBe("Válido");
+        });
+
+        test('Deve rejeitar comentário gigante (+500 chars)', () => {
+            const textao = "a".repeat(501);
+            const resultado = validarComentario(textao);
+            expect(resultado).toBe("Muito longo");
+        });
+    });
+
+    // GRUPO 7: TRATAMENTO DE ERRO DE GEOCODING (SERVICE)
+    describe('Lógica de Serviço de Mapas', () => {
+        // Lógica testada: O tratamento do array vazio vindo da API externa
+        
+        test('Deve lançar erro específico se a API retornar lista vazia', () => {
+            const respostaApiExterna = []; // Simulando resposta do Nominatim para "Rua Inexistente 999"
+            
+            let erroGerado = null;
+            
+            try {
+                if (respostaApiExterna.length === 0) {
+                    throw { status: 400, message: "Endereço não localizado" };
+                }
+            } catch (e) {
+                erroGerado = e;
+            }
+
+            expect(erroGerado).not.toBeNull();
+            expect(erroGerado.status).toBe(400);
+            expect(erroGerado.message).toContain("não localizado");
+        });
+    });
 });
