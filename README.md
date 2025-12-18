@@ -94,7 +94,17 @@ Durante o desenvolvimento do projeto Visse?, foram realizadas atividades de **re
 
 A partir da execução dos testes automatizados, foram identificados *bad smells*, como **código duplicado**, **uso de números mágicos**, **métodos excessivamente longos**, **dados hardcoded** e **estilos em linha** no frontend. Para corrigir esses problemas, o código foi reorganizado por meio da **extração de funções**, **criação de constantes nomeadas**, **separação de responsabilidades entre controllers e serviços**, **externalização de configurações** e **melhor organização dos estilos visuais**.
 
-O detalhamento completo dos testes realizados e das refatorações aplicadas encontra-se documentado na pasta Testes e Refactoring, onde estão descritos os cenários testados, as estratégias adotadas e as melhorias implementadas no código.
+O detalhamento completo dos testes realizados e das refatorações aplicadas encontra-se documentado na pasta Testes e Refactoring, onde estão descritos os cenários testados, as estratégias adotadas e as melhorias implementadas no código. Para fins de resumo, pode-se visualizar a seguinte tabela:
+
+| Teste | Ação | Resultado | Impacto |
+|------|------|-----------|---------|
+| 1 | Extração de código duplicado para a função `limparArquivoTemporario` | Centralização da lógica de limpeza | Código mais limpo e fácil de manter |
+| 2 | Substituição de números mágicos por constantes nomeadas | Significado explícito dos valores no código | Redução de erros e melhor legibilidade |
+| 3 | Decomposição do método `createLocal` em funções menores | Redução da complexidade do método | Código mais modular e testável |
+| 4 | Movimentação da lógica de negócio para classes de serviço | Controllers mais simples | Melhor organização da arquitetura |
+| 5 | Externalização de dados hardcoded para arquivos JSON | Configurações desacopladas da lógica | Manutenção facilitada |
+| 6 | Remoção de estilos inline no frontend | Separação entre lógica e apresentação | Reutilização de CSS e melhor organização visual |
+
 
 ---
 
