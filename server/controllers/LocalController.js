@@ -4,9 +4,11 @@ import * as LocalService from '../services/localService.js';
 import geocodeAddress from '../services/geocodingService.js';
 import { adicionarPontos, PONTOS } from './pontuacaoController.js'; 
 import fs from 'fs';
+import Pontuacao from '../models/Pontuacao.js';
 
 // 0.001 graus é aproximadamente 111 metros na linha do equador
 const RAIO_BUSCA_COORD = 0.001;
+const DISTANCIA_MAXIMA_CHECKIN = 200; // 200 metros para validar visita
 
 // Funções auxiliares 
 // Limpar arquivos temporários
@@ -25,13 +27,28 @@ const deletarImagemDoServidor = (caminhoRelativo) => {
     }
 };
 
-// CRIAR LOCAL (Versão: Endereço Manual)
+// Calcular distância entre duas coordenadas geográficas (Em metros)
+function calcularDistancia(lat1, lon1, lat2, lon2) {
+    const R = 6371e3; // Raio da Terra em metros
+    const φ1 = lat1 * Math.PI/180;
+    const φ2 = lat2 * Math.PI/180;
+    const Δφ = (lat2-lat1) * Math.PI/180;
+    const Δλ = (lon2-lon1) * Math.PI/180;
+
+    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ/2) * Math.sin(Δλ/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c; 
+}
+
+// CRIAR LOCAL (ganha pontos pelo cadastro, sem necessidade de check-in por localização)
 export const createLocal = async (req, res) => {
     try {
         const { nome, descricao, tipo, endereco, forceCreate } = req.body;
         const forcarCriacao = forceCreate === true || forceCreate === 'true';
 
-        // 1. Validação de Entrada
+        // Validação de Entrada
         if (!nome || !descricao || !tipo || !endereco) { 
             deletarArquivoTemporario(req.file);
             return res.status(400).json({ 
@@ -39,15 +56,15 @@ export const createLocal = async (req, res) => {
             });
         }
 
-        // 2. Processamento de Geolocalização 
+        // Processamento de Geolocalização 
         // O Service encapsula a chamada ao Nominatim
         const coords = await LocalService.processarGeolocalizacao(endereco);
 
-        // 3. Verificação de Duplicidade 
+        // Verificação de Duplicidade 
         // O Service faz o cálculo do RAIO_BUSCA_COORD (0.001)
         await LocalService.verificarDuplicidade(coords.latitude, coords.longitude, forcarCriacao);
 
-        // 4. Preparação dos dados de persistência
+        // Preparação dos dados de persistência
         const imagem_url = req.file ? `/uploads/locais/${req.file.filename}` : null;
         
         const dadosParaSalvar = {
@@ -61,10 +78,10 @@ export const createLocal = async (req, res) => {
             autor_id: req.usuario._id
         };
 
-        // 5. Salvar no Banco
+        // Salvar no Banco
         const novoLocal = await LocalService.salvarLocal(dadosParaSalvar);
 
-        // 6. Lógica de Gamificação
+        // Lógica de Gamificação
         try {
             await adicionarPontos(req.usuario._id, 'CADASTRAR_LOCAL', {
                 local_id: novoLocal._id,
@@ -89,6 +106,65 @@ export const createLocal = async (req, res) => {
             detalhe: error.detalhe,
             localExistente: error.localExistente // Caso retornado pelo verificarDuplicidade
         });
+    }
+};
+
+// CHECK-IN DE VISITA (Valida Geolocalização + Verifica duplicidade + Dá Pontos)
+export const fazerCheckInVisse = async (req, res) => {
+    try {
+        const { local_id, userLat, userLon } = req.body;
+        const usuario_id = req.usuario._id;
+
+        if (!local_id || !userLat || !userLon) {
+            return res.status(400).json({ message: "ID do local e coordenadas GPS são obrigatórios." });
+        }
+
+        const local = await Local.findById(local_id);
+        if (!local) return res.status(404).json({ message: "Local não encontrado." });
+
+        // Verifica se já visitou este local antes
+        const pontuacaoUsuario = await Pontuacao.findOne({ usuario_id });
+
+        if (pontuacaoUsuario) {
+            // Verifica no histórico se existe algum registro com este local_id e a ação VISITAR_LOCAL
+            const jaVisitou = pontuacaoUsuario.historico.some(registro => 
+                registro.acao === 'VISITAR_LOCAL' && 
+                registro.local_id && 
+                registro.local_id.toString() === local_id
+            );
+
+            if (jaVisitou) {
+                return res.status(409).json({ // 409 Conflict indica conflito de regra/duplicidade
+                    message: "Você já realizou check-in neste local! Pontos computados apenas na primeira visita."
+                });
+            }
+        }
+
+        // Valida Distância
+        const distancia = calcularDistancia(userLat, userLon, local.latitude, local.longitude);
+
+        if (distancia > DISTANCIA_MAXIMA_CHECKIN) {
+            return res.status(400).json({
+                message: "Você está muito longe do local para fazer Check-in.",
+                distancia_atual: Math.round(distancia) + "m",
+                raio_permitido: DISTANCIA_MAXIMA_CHECKIN + "m"
+            });
+        }
+
+        // Se estiver perto e nunca visitou, dá pontos
+        await adicionarPontos(usuario_id, 'VISITAR_LOCAL', {
+            local_id: local._id,
+            descricao: `Visitou o local "${local.nome}"`
+        });
+
+        return res.status(200).json({
+            message: `Check-in realizado! Você ganhou ${PONTOS.VISITAR_LOCAL} pontos.`,
+            distancia: Math.round(distancia)
+        });
+
+    } catch (error) {
+        console.error("Erro no check-in:", error);
+        return res.status(500).json({ message: "Erro ao processar check-in." });
     }
 };
 
@@ -204,53 +280,27 @@ export const deleteLocal = async (req, res) => {
     }
 };
 
-// CURTIR LOCAL 
+// CURTIR LOCAL - não ganha pontos
 export const curtirLocal = async (req, res) => {
     try {
         const { id } = req.params;
         const usuario_id = req.usuario._id;
 
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: "ID do local invalido." });
-        }
+        if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: "ID inválido." });
 
         const local = await Local.findById(id);
-
-        if (!local) {
-            return res.status(404).json({ message: "Local nao encontrado." });
-        }
+        if (!local) return res.status(404).json({ message: "Local não encontrado." });
 
         const jaCurtiu = local.curtidas.some(curtida => curtida.equals(usuario_id));
 
         if (jaCurtiu) {
             local.curtidas = local.curtidas.filter(c => !c.equals(usuario_id));
             await local.save();
-
-            return res.json({ 
-                message: "Curtida removida",
-                curtiu: false,
-                total_curtidas: local.curtidas.length
-            });
+            return res.json({ message: "Curtida removida", curtiu: false, total: local.curtidas.length });
         } else {
             local.curtidas.push(usuario_id);
             await local.save();
-
-            // Dar pontos ao dono do local (se não for ele mesmo)
-            if (!local.autor_id.equals(usuario_id)) {
-                try {
-                    await adicionarPontos(local.autor_id, 'RECEBER_CURTIDA', {
-                        local_id: local._id
-                    });
-                } catch (e) {
-                    console.error('Erro ao adicionar pontos ao dono:', e);
-                }
-            }
-
-            return res.json({ 
-                message: "Local curtido!",
-                curtiu: true,
-                total_curtidas: local.curtidas.length
-            });
+            return res.json({ message: "Local curtido!", curtiu: true, total: local.curtidas.length });
         }
 
     } catch (error) {

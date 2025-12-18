@@ -2,15 +2,14 @@ import Pontuacao from '../models/Pontuacao.js';
 import { capibaCheckIn } from '../services/capibaIntegrationService.js';
 
 // Tabela de pontuação (é exportada para uso em outros módulos)
+// Só recebe ponto por cadastrar novos locais e visitar locais cadastrados
 export const PONTOS = {
-    CADASTRAR_LOCAL: 50,
-    COMENTAR: 3,
-    RECEBER_CURTIDA: 3,
-    RECEBER_COMENTARIO: 5
+    CADASTRAR_LOCAL: 10,
+    VISITAR_LOCAL: 20  
 };
 
-// 10 pontos Visse = 7 Capibas
-const TAXA_CONVERSAO = 0.7;
+// 10 pontos Visse = 5 Capibas
+const TAXA_CONVERSAO = 0.5;
 const MIN_PONTOS_CONVERSAO = 10;
 const COORD_PADRAO_RECIFE = {
     LAT: -8.0476,

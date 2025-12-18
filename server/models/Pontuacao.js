@@ -8,6 +8,7 @@ const PontuacaoSchema = new mongoose.Schema({
         acao: {type: String, required: true},
         pontos: {type: Number, required: true},
         local_id: {type: mongoose.Schema.Types.ObjectId, ref: 'Local'},
+        descricao: {type: String}, // Salvar o texto "Visitou o local X"
         data: {type: Date, default: Date.now}
     }],
     criado_em: {type: Date, default: Date.now},

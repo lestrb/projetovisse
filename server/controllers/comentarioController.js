@@ -1,7 +1,6 @@
 import Comentario from '../models/Comentario.js';
 import Local from '../models/Local.js';
 import mongoose from 'mongoose';
-import { adicionarPontos, PONTOS } from './pontuacaoController.js';
 
 // CRIAR COMENTÁRIO
 export const criarComentario = async (req, res) => {
