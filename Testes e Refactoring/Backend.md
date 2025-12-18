@@ -87,7 +87,38 @@
 
 ---
 
-### 7. Segurança e Validação da API (Caixa Preta)
+### 7. Regra de Pontuação em Desafios (Caixa Branca)
+*Validação da lógica híbrida (Visse + API Externa): Usuário completa desafio mas não deve "farmar" pontos Visse se já visitou o local.*
+
+| Teste | Ação | Resultado Esperado | Falha |
+|------|------|-------------------|-------|
+| 0 | Check-in de desafio em local inédito (nunca visitado) | Pontos Visse concedidos (10) | Não |
+| 1 | Check-in de desafio em local já visitado anteriormente | Desafio validado (Sucesso), mas 0 pontos Visse | Não |
+
+---
+
+### 8. Validação de Conteúdo - Comentários (Caixa Branca)
+*Validação de limites de caracteres e preenchimento.*
+
+| Teste | Ação | Resultado Esperado | Falha |
+|------|------|-------------------|-------|
+| 0 | Comentário curto ("Oi") | Rejeitado ("Muito curto") | Não |
+| 1 | Comentário vazio ou apenas espaços | Rejeitado ("Muito curto") | Não |
+| 2 | Comentário válido ("Lugar excelente...") | Aceito ("Válido") | Não |
+| 3 | Comentário gigante (acima de 500 caracteres) | Rejeitado ("Muito longo") | Não |
+
+---
+
+### 9. Tratamento de Erro de Geocoding (Caixa Branca)
+*Simulação de resposta vazia da API de mapas.*
+
+| Teste | Ação | Resultado Esperado | Falha |
+|------|------|-------------------|-------|
+| 0 | API externa retorna lista vazia (endereço não encontrado) | Erro 400 lançado com mensagem "Endereço não localizado" | Não |
+
+---
+
+### 10. Segurança e Validação da API (Caixa Preta)
 
 | Teste | Ação | Resultado Esperado | Falha |
 |------|------|-------------------|-------|
