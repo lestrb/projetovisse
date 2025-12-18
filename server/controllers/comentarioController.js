@@ -44,27 +44,9 @@ export const criarComentario = async (req, res) => {
         // Popula dados do autor para retornar
         await comentario.populate('autor_id', 'nome');
 
-
-        // DAR PONTOS AO USUÁRIO POR COMENTAR
-        try {
-            await adicionarPontos(autor_id, 'COMENTAR', {
-                local_id: local._id,
-                descricao: `Comentou no local "${local.nome}"`
-            });
-
-            await adicionarPontos(local.autor_id, 'RECEBER_COMENTARIO', {  
-                local_id: local._id, 
-                descricao: `Recebeu comentário no local "${local.nome}"`
-            });
-
-        } catch (pontoError) {
-            console.error('Erro ao adicionar pontos:', pontoError);
-        }
-
         return res.status(201).json({
-            message: `Comentário publicado! Você ganhou ${PONTOS.COMENTAR} pontos Visse!`,
-            comentario,
-            pontos_ganhos: PONTOS.COMENTAR
+            message: "Comentário publicado com sucesso!",
+            comentario
         });
 
     } catch (error) {
