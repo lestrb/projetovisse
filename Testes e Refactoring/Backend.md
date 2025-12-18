@@ -59,7 +59,41 @@
 
 | Teste | Ação | Resultado Esperado | Falha |
 |------|------|-------------------|-------|
-| 0 | Cálculo de distância para o mesmo ponto (0m) |
+| 0 | Cálculo de distância para o mesmo ponto (0m) | Distância próxima de 0 (erro flutuante aceito) | Não |
+| 1 | Cálculo de distância dentro do raio (ex: 150m) | Distância < 200m (Aprovado) | Não |
+| 2 | Cálculo de distância fora do raio (ex: Recife -> Olinda) | Distância > 200m (Rejeitado) | Não |
+
+---
+
+### 5. Validação de Histórico Único / Anti-Farming (Caixa Branca)
+*Validação da regra que impede ganhar pontos repetidos no mesmo local.*
+
+| Teste | Ação | Resultado Esperado | Falha |
+|------|------|-------------------|-------|
+| 0 | Usuário tenta check-in em local já existente no histórico com ação `VISITAR_LOCAL` | Retorno `true` (Bloqueado/Já visitou) | Não |
+| 1 | Usuário tenta check-in em local inédito | Retorno `false` (Permitido/Novo ponto) | Não |
+| 2 | Histórico vazio | Retorno `false` (Permitido) | Não |
+
+---
+
+### 6. Conversão de Pontos (Caixa Branca)
+*Validação da taxa de conversão (0.5) e arredondamento.*
+
+| Teste | Ação | Resultado Esperado | Falha |
+|------|------|-------------------|-------|
+| 0 | Conversão de 100 pontos Visse | Resultado: 50 Capibas (Taxa 0.5) | Não |
+| 1 | Conversão de número ímpar (15 pontos) | Resultado: 7 Capibas (Arredondamento `floor`) | Não |
+| 2 | Tentativa de converter abaixo do mínimo (5 pontos) | Retorno `false` ou bloqueio | Não |
+
+---
+
+### 7. Segurança e Validação da API (Caixa Preta)
+
+| Teste | Ação | Resultado Esperado | Falha |
+|------|------|-------------------|-------|
+| 0 | Requisição GET para `/test` (Health Check) | Status 200 OK | Não |
+| 1 | POST para `/locais` sem token JWT | Status diferente de 200/201 (Bloqueado) | Não |
+| 2 | POST para `/locais` com token falso e dados vazios | Status diferente de 201 (Bloqueado por validação) | Não |
 
 ---
 
