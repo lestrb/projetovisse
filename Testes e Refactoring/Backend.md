@@ -60,3 +60,16 @@
 | Teste | Ação | Resultado Esperado | Falha |
 |------|------|-------------------|-------|
 | 0 | Cálculo de distância para o mesmo ponto (0m) |
+
+---
+
+## Refactoring (Refatoração)
+
+Durante a execução dos testes, foram identificados e corrigidos diversos *bad smells* no código:
+
+- **Código duplicado:** blocos repetidos de exclusão de arquivos temporários foram extraídos para a função `limparArquivoTemporario`, reduzindo redundância.
+- **Números mágicos:** valores como `0.001` (distância mínima) e `500` (taxa de conversão) foram substituídos por constantes nomeadas.
+- **Método longo / classe inchada:** a função `createLocal` foi decomposta em funções menores e parte da lógica foi movida para serviços especializados.
+- **Dados hardcoded:** listas fixas de strings foram extraídas para arquivos JSON externos, facilitando manutenção.
+  
+Essas refatorações aumentaram a legibilidade, manutenibilidade e testabilidade do backend.
