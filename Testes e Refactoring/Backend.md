@@ -141,11 +141,109 @@
 
 ## Refactoring (Refatoração)
 
-Durante a execução dos testes, foram identificados e corrigidos diversos *bad smells* no código:
+Durante a execução dos testes e revisão de código, foram identificados *bad smells* e aplicadas as seguintes refatorações para aumentar a manutenibilidade e legibilidade:
 
-- **Código duplicado:** blocos repetidos de exclusão de arquivos temporários foram extraídos para a função `limparArquivoTemporario`, reduzindo redundância.
-- **Números mágicos:** valores como `0.001` (distância mínima) e `500` (taxa de conversão) foram substituídos por constantes nomeadas.
-- **Método longo / classe inchada:** a função `createLocal` foi decomposta em funções menores e parte da lógica foi movida para serviços especializados.
-- **Dados hardcoded:** listas fixas de strings foram extraídas para arquivos JSON externos, facilitando manutenção.
-  
+### 1. Remoção de Código Duplicado (DRY Principle)
+**Arquivo:** `server/controllers/LocalController.js`
+
+Havia repetição excessiva da lógica de exclusão de arquivos temporários (`fs.unlinkSync`) dentro de blocos `try/catch` e validações de erro. A lógica foi extraída para funções auxiliares reutilizáveis.
+
+* **Antes (Repetido múltiplas vezes):**
+    ```javascript
+    if (req.file) {
+        fs.unlinkSync(req.file.path);
+    }
+    ```
+
+* **Depois (Centralizado):**
+    ```javascript
+    // Função auxiliar criada
+    const deletarArquivoTemporario = (file) => {
+        if (file && file.path) fs.unlinkSync(file.path);
+    };
+
+    // Uso no código
+    deletarArquivoTemporario(req.file);
+    ```
+
+---
+
+### 2. Substituição de "Magic Numbers" por Constantes
+Números soltos no código dificultavam o entendimento das regras de negócio. Eles foram substituídos por constantes nomeadas.
+
+**A. Coordenadas de Busca**
+**Arquivo:** `server/controllers/LocalController.js`
+* **Antes:** `latitude: { $gte: latitude - 0.001, ... }`
+* **Depois:** `latitude: { $gte: latitude - RAIO_BUSCA_COORD, ... }`
+
+**B. Pontuação de Comentários**
+**Arquivo:** `server/controllers/comentarioController.js`
+* **Antes:** `message: "Você ganhou 10 pontos!"`
+* **Depois:** `message: "Você ganhou ${PONTOS.COMENTAR} pontos!"`
+
+**C. Coordenadas Padrão e Taxas**
+**Arquivo:** `server/controllers/pontuacaoController.js`
+* **Antes:** Uso direto de `-8.0476` e `-34.8770` (Coordenadas do Recife).
+* **Depois:** Objeto de configuração `COORD_PADRAO_RECIFE`.
+
+---
+
+### 3. Correção de Classe Inchada (Bloated Class) e Extração de Camada de Serviço
+**Arquivos:** `server/controllers/LocalController.js` (Refatorado) e `server/services/localService.js` (Novo)
+
+O controller `createLocal` violava o Princípio da Responsabilidade Única (SRP), misturando orquestração HTTP com lógica pesada de negócio (chamada de API de mapas, cálculo matemático de distância e persistência no banco). Essa lógica foi extraída para um novo serviço.
+
+* **Antes (Controller Inchado - Responsabilidades misturadas):**
+    ```javascript
+    // server/controllers/LocalController.js
+    
+    // ... Lógica de Geocoding "chumbada" no controller
+    try {
+        const coords = await geocodeAddress(endereco); 
+        // ... tratativa de erro manual aqui
+    } catch (e) { return res.status(400)... }
+
+    // ... Lógica de Duplicidade "chumbada" no controller
+    const localExistente = await Local.findOne({ 
+        latitude: { $gte: latitude - 0.001 ... } 
+    });
+    if (localExistente) return res.status(409)...
+
+    // ... Lógica de Persistência "chumbada" no controller
+    const novoLocal = new Local({...});
+    await novoLocal.save();
+    ```
+
+* **Depois (Controller Limpo - Apenas Orquestração):**
+    ```javascript
+    // server/controllers/LocalController.js
+    
+    // 1. Chama serviço para processar GPS
+    const coords = await LocalService.processarGeolocalizacao(endereco);
+
+    // 2. Chama serviço para validar regras de negócio
+    await LocalService.verificarDuplicidade(coords.latitude, coords.longitude, forcarCriacao);
+
+    // 3. Chama serviço para salvar
+    const novoLocal = await LocalService.salvarLocal(dadosParaSalvar);
+    ```
+
+* **Novo Arquivo (Camada de Serviço Especializada):**
+    ```javascript
+    // server/services/localService.js
+    
+    export const processarGeolocalizacao = async (endereco) => { ... }
+    
+    export const verificarDuplicidade = async (lat, lon, forcar) => {
+        // Encapsula a query complexa do MongoDB e a regra de exceção 409
+    }
+    
+    export const salvarLocal = async (dados) => { ... }
+    ```
+
+---
+
+### 4. Externalização de Dados (Hardcoded Data)
+Listas fixas de strings ou configurações que estavam "chumbadas" no código foram extraídas para facilitar a manutenção futura sem necessidade de alterar a lógica principal.
+
 Essas refatorações aumentaram a legibilidade, manutenibilidade e testabilidade do backend.
