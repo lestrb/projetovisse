@@ -76,71 +76,61 @@ Usuários podem cadastrar novos locais culturais no mapa. Cada local possui nome
 
 ## 🛠️ Ferramentas, frameworks e bibliotecas utilizados 
 Para o desenvolvimento do Projeto _Visse?_, utilizamos um conjunto de ferramentas e tecnologias, que tornaram possível criar um projeto tecnicamente funcional. Esses recursos foram:
-- **JavaScript** — Linguagem principal do projeto, utilizada para a implementação da lógica, organização das classes e integração do sistema;
-- **Frontend**: React.js;
-- **Backend**: Node.js + Express;
-- **Banco de Dados**: MongoDB;
-- **Mapas**: API de mapas;
-- **Autenticação**: Conecta Recife;
-- **Estilização**: CSS;
-- **nlohmann/json** — Biblioteca usada para realizar a persistência de dados em formato JSON, permitindo salvar e recuperar informações sem um banco de dados real;
-- **Visual Studio Code** — Editor de código adotado pela equipe, com extensões para depuração e integração com o GitHub;
-- **GitHub** — Usado para o controle de versão, acompanhamento das alterações e colaboração remota de forma organizada; 
-- **Discord e WhatsApp** — Aplicativos de comunicação, utilizados para o alinhamento de equipe, com mensagens e reuniões por chamada de vídeo;
-- **Makefile** — Usado para automatizar o processo de compilação e limpeza dos arquivos gerados.
 
+- **JavaScript**: Linguagem principal do projeto, utilizada na implementação da lógica da aplicação, organização dos módulos e integração entre frontend e backend;
+- **Frontend (React.js)**: Biblioteca utilizada para a construção da interface do usuário de forma componentizada e reativa;
+- **Backend (Node.js + Express)**: Ambiente e framework responsáveis pela criação da API, definição das rotas e implementação das regras de negócio;
+- **Banco de Dados (MongoDB)**: Banco de dados NoSQL utilizado para o armazenamento e gerenciamento das informações da aplicação;
+- **Mapas (API de mapas)**: Serviço externo utilizado para exibição e manipulação de dados geográficos no sistema;
+- **Autenticação (Conecta Recife)**: Serviço utilizado para autenticação e validação de usuários na plataforma;
+- **Estilização (CSS / Tailwind CSS)**: Tecnologias utilizadas para a estilização da interface, garantindo organização visual e responsividade;
+- **Visual Studio Code**: Editor de código adotado pela equipe, com suporte a extensões para depuração, formatação e integração com controle de versão;
+- **GitHub**: Plataforma utilizada para versionamento do código, acompanhamento de alterações e colaboração entre os integrantes do projeto;
+- **Dockerização (Docker e Docker Compose)**: Ferramentas utilizadas para padronizar o ambiente de desenvolvimento e execução do projeto, permitindo a criação de containers para frontend e backend de forma isolada e reproduzível;
+- **Comunicação (Discord e WhatsApp)**: Ferramentas utilizadas para comunicação da equipe, alinhamento de tarefas e realização de reuniões.
 ---
 
 ## 🧱 Estrutura de Pastas
 ```
-├── .vscode/
-│   ├── settings.json
-│   └── tasks.json
+├── .github                           ## Configurações do GitHub (CI/CD e automações)
+│   ├── workflows/
+│       └── tests.yml                 ## Pipeline de testes automatizados
 │
-├── classes/
-│   ├── ComparadorPaciente.h
-│   ├── Consulta.h
-│   ├── FilaAtendimento.h
-│   ├── Hospital.h
-│   ├── Medico.h
-│   ├── Paciente.h
-│   ├── Pessoa.h
-│   └── Relatorios.h
+├── Architeture Decision Log/         ## Registro das decisões arquiteturais do projeto (em modelo de ADRs)
 │
-├── docs/   
-│   ├── imagens/
-│       └── agendamento.png
-│       └── cadastro_medico.png
-│       └── cadastro_paciente.png
-│       └── fila.png
-│       └── lista_pacientes.png
-│       └── menu_principal.png
-│       └── submenu_consultas.png
-│       └── submenu_medicos.png
-│       └── submenu_pacientes.png
-│       └── submenu_relatorios.png
-│   └── index.html
+├── client/                           ## Frontend da aplicação (React + Tailwind)
+│   ├── public/
+│   ├── src/
+│   ├── .dockerignore
+│   ├── Dockerfile
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── postcss.config.js
+│   └── tailwind.config.js
 │
-├── include/
-│   └── nlohmann/
-│       └── json.hpp
-│
-├── src/
-│   ├── Consulta.cpp
-│   ├── FilaAtendimento.cpp
-│   ├── Hospital.cpp
-│   ├── main.cpp
-│   ├── Medico.cpp
-│   ├── Paciente.cpp
-│   ├── Pessoa.cpp
-│   └── Relatorios.cpp 
+├── server/                           ## Backend da aplicação (API e regras de negócio)
+│   ├── Config/
+│   ├── Utils/
+│   ├── controllers/
+│   ├── middlewares/
+│   ├── models/
+│   ├── routes/
+│   ├── services/
+│   ├── tests/
+│   ├── uploads/locais/
+│   ├── .dockerignore
+│   ├── Dockerfile
+│   ├── package-lock.json
+│   ├── package.json
+│   └── server.js
 │
 ├── .gitignore
 │
-├── Makefile
+├── App.jsx                            ## Arquivo principal do frontend (componente raiz React)
 │
-└── README.md
-
+├── README.md                          ## Read Me do GitHub do Projeto
+│
+└── docker-compose.yml                 ## Orquestração dos containers Docker (client + server)
 ```
 
 ---
