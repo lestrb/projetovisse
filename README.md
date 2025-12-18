@@ -35,7 +35,7 @@ Usuários podem cadastrar novos locais culturais no mapa. Cada local possui nome
     </td> 
     <td align="center"> 
       <a href="https://github.com/Edo-Alve5"> 
-        <img src="https://media-for2-1.cdn.whatsapp.net/v/t61.24694-24/484208345_1875642679850162_6002395139070660778_n.jpg?ccb=11-4&oh=01_Q5Aa2wFiCpbyM5sNUZfNnsWtJWS89EvNuel8qniWy9wQoe5qpg&oe=691789A2&_nc_sid=5e03e0&_nc_cat=100" width="115"><br> 
+        <img src="https://avatars.githubusercontent.com/u/239075849?v=4" width="115"><br> 
         <sub><b>Eduardo Alves</b></sub><br> <sub>(<code>Edo-Alve5</code>)</sub> 
       </a> 
     </td> 
