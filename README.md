@@ -97,8 +97,8 @@ A partir da execução dos testes automatizados, foram identificados *bad smells
 O detalhamento completo dos testes realizados e das refatorações aplicadas encontra-se documentado na pasta Testes e Refactoring, onde estão descritos os cenários testados, as estratégias adotadas e as melhorias implementadas no código. Para fins de resumo, pode-se visualizar a seguinte tabela:
 
 | Teste | Ação | Resultado | Impacto |
-|------|------|-----------|---------|
-| 1 | Extração de código duplicado para a função `limparArquivoTemporario` | Centralização da lógica de limpeza | Código mais limpo e fácil de manter |
+| :--- | :--- | :--- | :--- |
+| 1 | Extração de código duplicado para a função `deletarArquivoTemporario` | Centralização da lógica de limpeza | Código mais limpo e fácil de manter |
 | 2 | Substituição de números mágicos por constantes nomeadas | Significado explícito dos valores no código | Redução de erros e melhor legibilidade |
 | 3 | Decomposição do método `createLocal` em funções menores | Redução da complexidade do método | Código mais modular e testável |
 | 4 | Movimentação da lógica de negócio para classes de serviço | Controllers mais simples | Melhor organização da arquitetura |
