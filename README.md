@@ -135,47 +135,56 @@ Para o desenvolvimento do Projeto _Visse?_, utilizamos um conjunto de ferramenta
 
 ---
 
-## ⚙️ Como Compilar e Executar
+## 🐳 Dockerização e Ambiente de Desenvolvimento
+O projeto Visse? utiliza *Docker* e *Docker Compose* para orquestrar o ambiente de desenvolvimento, garantindo que o sistema funcione de forma idêntica em qualquer máquina, sem a necessidade de instalação manual de dependências globais.
 
-### 🔹 Pré-requisitos
-- **Compilador C++17** ou superior (`g++`, `clang++`, etc.)
-- **Make** ou **MinGW Make**
-- **Biblioteca nlohmann/json** (já incluída na pasta `include/nlohmann/json.hpp`)
+### 🏗️ Arquitetura dos Containers
+A aplicação é dividida em dois serviços principais:
 
----
-  
-### 🪟 **Windows (PowerShell ou CMD)**
-1. Abra o terminal na raiz do projeto.
-2. Para compilar:
-   ```powershell
-   mingw32-make
-3. Para limpar e recompilar do zero:
-   ```powershell
-   mingw32-make rebuild
-4. Após a compilação, o executável será gerado na pasta:
-   ```powershell
-   bin/hospital.exe
-5. Para executar:
-   ```powershell
-   bin/hospital.exe
+1. *Frontend (Client)*: Container Node.js que roda o ambiente React (porta 3000).
+2. *Backend (Server)*: Container Node.js (ESM) que roda a API Express (porta 3002).
 
----
+### ☁️ Persistência de Dados e Nuvem
+Diferente de uma configuração padrão, este ambiente Docker está integrado diretamente ao *MongoDB Atlas*:
 
-### 🐧 **Linux / macOS (Bash ou Terminal)**
-1. Abra o terminal na raiz do projeto.
-2. Para compilar:
-   ```bash
-   make
-3. Para limpar e recompilar do zero:
-   ```bash
-   make rebuild
-4. Após a compilação, o executável será gerado na pasta:
-   ```bash
-   bin/hospital
-5. Para executar:
-   ```bash
-   ./bin/hospital
-   
+* *Dados na Nuvem*: Toda a persistência é feita no Atlas, permitindo que os dados sobrevivam mesmo que os containers sejam removidos.
+* *Segurança: As credenciais são carregadas via arquivo .env localmente (não versionado) e via **GitHub Secrets* no pipeline de CI.
+* *Arquivos Locais*: O upload de imagens via multer é persistido através de um volume Docker na pasta ./server/uploads.
+
+### 🚀 Como Rodar o Projeto com Docker
+
+#### 1. Pré-requisitos
+
+* [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado e rodando.
+* Arquivo .env configurado dentro da pasta /server com a MONGO_URI do Atlas.
+
+#### 2. Passo a Passo
+No terminal, na raiz do projeto, execute o comando abaixo para construir as imagens e subir os containers:
+
+```
+bash
+docker compose up --build
+```
+
+#### 3. Acesso à Aplicação
+Após a inicialização, os serviços estarão disponíveis em:
+
+* *Frontend*: http://localhost:3000
+* *Backend (API)*: http://localhost:3002
+
+### 🛠️ Comandos Úteis
+
+| Comando | Descrição |
+| --- | --- |
+| docker compose up | Inicia os containers existentes. |
+| docker compose down | Para e remove os containers e redes criadas. |
+| docker compose ps | Lista o status dos containers do projeto. |
+| docker compose logs -f | Acompanha os logs de erro e saída em tempo real. |
+
+### 📝 Observações
+
+* *Hot-Reload*: Os volumes estão mapeados de forma que qualquer alteração no código fonte (/client ou /server) reinicie o serviço automaticamente dentro do container.
+
 ---
 
 ### 📄 **Licença**
