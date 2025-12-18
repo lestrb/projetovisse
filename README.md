@@ -88,17 +88,31 @@ Para o desenvolvimento do Projeto _Visse?_, utilizamos um conjunto de ferramenta
 - **GitHub**: Plataforma utilizada para versionamento do código, acompanhamento de alterações e colaboração entre os integrantes do projeto;
 - **Dockerização (Docker e Docker Compose)**: Ferramentas utilizadas para padronizar o ambiente de desenvolvimento e execução do projeto, permitindo a criação de containers para frontend e backend de forma isolada e reproduzível;
 - **Comunicação (Discord e WhatsApp)**: Ferramentas utilizadas para comunicação da equipe, alinhamento de tarefas e realização de reuniões.
+
+---
+
+## 🔧 Refatoração (Refactoring) 
+Durante o desenvolvimento do projeto Visse?, foram realizadas atividades de **refatoração** com o objetivo de melhorar a qualidade do código, aumentar a legibilidade, facilitar a manutenção e tornar o sistema mais testável, sem alterar o comportamento externo da aplicação.
+
+A partir da execução dos testes automatizados, foram identificados *bad smells*, como **código duplicado**, **uso de números mágicos**, **métodos excessivamente longos**, **dados hardcoded** e **estilos em linha** no frontend. Para corrigir esses problemas, o código foi reorganizado por meio da **extração de funções**, **criação de constantes nomeadas**, **separação de responsabilidades entre controllers e serviços**, **externalização de configurações** e **melhor organização dos estilos visuais**.
+
+O detalhamento completo dos testes realizados e das refatorações aplicadas encontra-se documentado na pasta Testes e Refactoring, onde estão descritos os cenários testados, as estratégias adotadas e as melhorias implementadas no código.
+
 ---
 
 ## 🧱 Estrutura de Pastas
 ```
-├── .github                           ## Configurações do GitHub (CI/CD e automações)
+├── .github                            ## Configurações do GitHub (CI/CD e automações)
 │   ├── workflows/
-│       └── tests.yml                 ## Pipeline de testes automatizados
+│       └── tests.yml                  ## Pipeline de testes automatizados
 │
-├── Architeture Decision Log/         ## Registro das decisões arquiteturais do projeto (em modelo de ADRs)
+├── Architeture Decision Log/          ## Registro das decisões arquiteturais do projeto (em modelo de ADRs)
 │
-├── client/                           ## Frontend da aplicação (React + Tailwind)
+├── Testes e Refactoring/              ## Registro dos testes realizados e das decisões de Refactoring
+│   ├── Frontend.md                    ## Testes do Frontend 
+│   └── Backend.md                     ## Testes do Backend
+│
+├── client/                            ## Frontend da aplicação (React + Tailwind)
 │   ├── public/
 │   ├── src/
 │   ├── .dockerignore
@@ -108,7 +122,7 @@ Para o desenvolvimento do Projeto _Visse?_, utilizamos um conjunto de ferramenta
 │   ├── postcss.config.js
 │   └── tailwind.config.js
 │
-├── server/                           ## Backend da aplicação (API e regras de negócio)
+├── server/                            ## Backend da aplicação (API e regras de negócio)
 │   ├── Config/
 │   ├── Utils/
 │   ├── controllers/
