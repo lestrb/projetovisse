@@ -34,12 +34,6 @@ Usuários podem cadastrar novos locais culturais no mapa. Cada local possui nome
       </a> 
     </td> 
     <td align="center"> 
-      <a href="https://github.com/CaioVBoas"> 
-        <img src="https://avatars.githubusercontent.com/u/100202613?v=4" width="115"><br> 
-        <sub><b>Clara</b></sub><br> <sub>(<code>CaioVBoas</code>)</sub> 
-      </a> 
-    </td> 
-    <td align="center"> 
       <a href="https://github.com/Edo-Alve5"> 
         <img src="https://media-for2-1.cdn.whatsapp.net/v/t61.24694-24/484208345_1875642679850162_6002395139070660778_n.jpg?ccb=11-4&oh=01_Q5Aa2wFiCpbyM5sNUZfNnsWtJWS89EvNuel8qniWy9wQoe5qpg&oe=691789A2&_nc_sid=5e03e0&_nc_cat=100" width="115"><br> 
         <sub><b>Eduardo Alves</b></sub><br> <sub>(<code>Edo-Alve5</code>)</sub> 
@@ -52,15 +46,15 @@ Usuários podem cadastrar novos locais culturais no mapa. Cada local possui nome
       </a> 
     </td> 
      <td align="center"> 
-      <a href="https://github.com/safiracode"> 
-        <img src="https://avatars.githubusercontent.com/u/206463303?v=4" width="115"><br> 
-        <sub><b>Maria Vitória</b></sub><br> <sub>(<code>safiracode</code>)</sub> 
+      <a href="https://github.com/claramtenorio"> 
+        <img src="https://avatars.githubusercontent.com/u/158226328?v=4" width="115"><br> 
+        <sub><b>Maria Clara Laranjeira</b></sub><br> <sub>(<code>safiracode</code>)</sub> 
       </a> 
     </td> 
     <td align="center"> 
-      <a href="https://github.com/safiracode"> 
-        <img src="https://avatars.githubusercontent.com/u/206463303?v=4" width="115"><br> 
-        <sub><b>Safira Moraes</b></sub><br> <sub>(<code>safiracode</code>)</sub> 
+      <a href="https://github.com/reilsonbatista-design"> 
+        <img src="https://avatars.githubusercontent.com/u/225021265?v=4" width="115"><br> 
+        <sub><b>Reilson Batista</b></sub><br> <sub>(<code>safiracode</code>)</sub> 
       </a> 
     </td> 
      <td align="center"> 
@@ -69,8 +63,16 @@ Usuários podem cadastrar novos locais culturais no mapa. Cada local possui nome
         <sub><b>Safira Moraes</b></sub><br> <sub>(<code>safiracode</code>)</sub> 
       </a> 
     </td> 
+     <td align="center"> 
+      <a href="https://github.com/VitoriaDasDores"> 
+        <img src="https://avatars.githubusercontent.com/u/91498762?v=4" width="115"><br> 
+        <sub><b>Vitória das Dores</b></sub><br> <sub>(<code>safiracode</code>)</sub> 
+      </a> 
+    </td> 
   </tr> 
 </table> 
+
+---
 
 ## 🛠️ Ferramentas, frameworks e bibliotecas utilizados 
 Para o desenvolvimento do Projeto _Visse?_, utilizamos um conjunto de ferramentas e tecnologias, que tornaram possível criar um projeto tecnicamente funcional. Esses recursos foram:
