@@ -18,6 +18,10 @@ const PontuacaoSchema = new mongoose.Schema({
 // Índice composto para queries rápidas
 PontuacaoSchema.index({ usuario_id: 1, pontos_visse: -1 });
 
+// Índice para otimizar a verificação de duplicidade de check-in
+// Isso ajuda o ".some()" ou queries diretas a serem mais rápidas
+PontuacaoSchema.index({ "historico.local_id": 1, "historico.acao": 1 });
+
 // Middleware para atualizar atualizado_em
 PontuacaoSchema.pre('save', function (next) {
     this.atualizado_em = Date.now();

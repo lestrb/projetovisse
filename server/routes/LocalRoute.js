@@ -7,7 +7,8 @@ import {
     updateLocal, 
     deleteLocal,
     curtirLocal,
-    fazerCheckInVisse
+    fazerCheckInVisse,
+    fazerCheckInDesafioVisse
 } from '../controllers/LocalController.js'; 
 
 import authMiddleware from '../middlewares/authMiddleware.js';
@@ -20,6 +21,10 @@ localRouter.post('/', authMiddleware, upload.single('imagem'), createLocal);
 
 // Validar presença física e ganhar pontos
 localRouter.post('/check-in', authMiddleware, fazerCheckInVisse);
+localRouter.post('/check-in/desafio/:challengeId/requirement/:requirementId', 
+    authMiddleware, 
+    fazerCheckInDesafioVisse
+);
 
 // Atualizar local 
 localRouter.put('/:id', authMiddleware, upload.single('imagem'), updateLocal);

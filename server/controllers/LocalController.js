@@ -5,6 +5,9 @@ import geocodeAddress from '../services/geocodingService.js';
 import { adicionarPontos, PONTOS } from './pontuacaoController.js'; 
 import fs from 'fs';
 import Pontuacao from '../models/Pontuacao.js';
+import axios from 'axios'; // Chamar a API externa
+
+const CAPIBA_API_URL = 'https://gamificacao.homolog.app.emprel.gov.br/api'; // URL da API
 
 // 0.001 graus é aproximadamente 111 metros na linha do equador
 const RAIO_BUSCA_COORD = 0.001;
@@ -41,6 +44,56 @@ function calcularDistancia(lat1, lon1, lat2, lon2) {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     return R * c; 
 }
+
+// Faz a validação de distância e a lógica de pontos, retornando um objeto com o resultado ou lança erro se falhar.
+const processarLogicaVisse = async (usuario_id, local_id, userLat, userLon) => {
+    // Validar Inputs
+    if (!local_id || !userLat || !userLon) {
+        throw { status: 400, message: "ID do local e coordenadas GPS são obrigatórios." };
+    }
+
+    const local = await Local.findById(local_id);
+    if (!local) throw { status: 404, message: "Local não encontrado." };
+
+    // Validar Distância
+    const distancia = calcularDistancia(userLat, userLon, local.latitude, local.longitude);
+    if (distancia > DISTANCIA_MAXIMA_CHECKIN) {
+        throw { 
+            status: 400, 
+            message: "Você está muito longe do local.",
+            data: { distancia_atual: Math.round(distancia) + "m", raio_permitido: DISTANCIA_MAXIMA_CHECKIN + "m" }
+        };
+    }
+
+    // Verificar Histórico (Duplicidade)
+    const pontuacaoUsuario = await Pontuacao.findOne({ usuario_id });
+    let jaVisitou = false;
+
+    if (pontuacaoUsuario) {
+        jaVisitou = pontuacaoUsuario.historico.some(registro => 
+            registro.acao === 'VISITAR_LOCAL' && 
+            registro.local_id && 
+            registro.local_id.toString() === local_id
+        );
+    }
+
+    // Dar Pontos (se for inédito)
+    let pontosGanhos = 0;
+    if (!jaVisitou) {
+        await adicionarPontos(usuario_id, 'VISITAR_LOCAL', {
+            local_id: local._id,
+            descricao: `Visitou o local "${local.nome}"`
+        });
+        pontosGanhos = PONTOS.VISITAR_LOCAL;
+    }
+
+    return {
+        local,
+        distancia: Math.round(distancia),
+        jaVisitou,
+        pontosGanhos
+    };
+};
 
 // CRIAR LOCAL (ganha pontos pelo cadastro, sem necessidade de check-in por localização)
 export const createLocal = async (req, res) => {
@@ -109,62 +162,71 @@ export const createLocal = async (req, res) => {
     }
 };
 
-// CHECK-IN DE VISITA (Valida Geolocalização + Verifica duplicidade + Dá Pontos)
+// ROTA 1: Check-in Simples (Só Visse)
 export const fazerCheckInVisse = async (req, res) => {
     try {
-        const { local_id, userLat, userLon } = req.body;
-        const usuario_id = req.usuario._id;
+        // Chama a função centralizada
+        const resultado = await processarLogicaVisse(req.usuario._id, req.body.local_id, req.body.userLat, req.body.userLon);
 
-        if (!local_id || !userLat || !userLon) {
-            return res.status(400).json({ message: "ID do local e coordenadas GPS são obrigatórios." });
-        }
-
-        const local = await Local.findById(local_id);
-        if (!local) return res.status(404).json({ message: "Local não encontrado." });
-
-        // Verifica se já visitou este local antes
-        const pontuacaoUsuario = await Pontuacao.findOne({ usuario_id });
-
-        if (pontuacaoUsuario) {
-            // Verifica no histórico se existe algum registro com este local_id e a ação VISITAR_LOCAL
-            const jaVisitou = pontuacaoUsuario.historico.some(registro => 
-                registro.acao === 'VISITAR_LOCAL' && 
-                registro.local_id && 
-                registro.local_id.toString() === local_id
-            );
-
-            if (jaVisitou) {
-                return res.status(409).json({ // 409 Conflict indica conflito de regra/duplicidade
-                    message: "Você já realizou check-in neste local! Pontos computados apenas na primeira visita."
-                });
-            }
-        }
-
-        // Valida Distância
-        const distancia = calcularDistancia(userLat, userLon, local.latitude, local.longitude);
-
-        if (distancia > DISTANCIA_MAXIMA_CHECKIN) {
-            return res.status(400).json({
-                message: "Você está muito longe do local para fazer Check-in.",
-                distancia_atual: Math.round(distancia) + "m",
-                raio_permitido: DISTANCIA_MAXIMA_CHECKIN + "m"
+        // Se o usuário já visitou, retornamos erro 409 
+        if (resultado.jaVisitou) {
+            return res.status(409).json({ 
+                message: "Você já realizou check-in neste local! Pontos computados apenas na primeira visita." 
             });
         }
 
-        // Se estiver perto e nunca visitou, dá pontos
-        await adicionarPontos(usuario_id, 'VISITAR_LOCAL', {
-            local_id: local._id,
-            descricao: `Visitou o local "${local.nome}"`
-        });
-
         return res.status(200).json({
-            message: `Check-in realizado! Você ganhou ${PONTOS.VISITAR_LOCAL} pontos.`,
-            distancia: Math.round(distancia)
+            message: `Check-in realizado! Você ganhou ${resultado.pontosGanhos} pontos.`,
+            distancia: resultado.distancia
         });
 
     } catch (error) {
+        if (error.status) return res.status(error.status).json(error.data ? { ...error, ...error.data } : { message: error.message });
         console.error("Erro no check-in:", error);
         return res.status(500).json({ message: "Erro ao processar check-in." });
+    }
+};
+
+// ROTA 2: Check-in com Desafio (Visse + Capiba API)
+export const fazerCheckInDesafioVisse = async (req, res) => {
+    try {
+        const { challengeId, requirementId } = req.params;
+        const token = req.headers.authorization?.split(' ')[1];
+
+        // Executa a lógica do Visse
+        // Aqui não bloqueamos se já visitou, apenas guardamos o resultado
+        const resultadoVisse = await processarLogicaVisse(req.usuario._id, req.body.local_id, req.body.userLat, req.body.userLon);
+
+        // Se passou pela lógica acima (não deu erro de distância), chamamos a API externa
+        try {
+            const responseCapiba = await axios.post(
+                `${CAPIBA_API_URL}/check-in/location/challenge/${challengeId}/requirement/${requirementId}`,
+                req.body, 
+                { headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } }
+            );
+
+            return res.json({
+                message: "Desafio realizado com sucesso!",
+                visse: {
+                    distancia_validada: true,
+                    pontos_ganhos: resultadoVisse.pontosGanhos,
+                    status: resultadoVisse.pontosGanhos > 0 ? "Pontos Visse creditados!" : "Local já visitado anteriormente."
+                },
+                capiba: responseCapiba.data
+            });
+
+        } catch (apiError) {
+            console.error('Erro na API Capiba:', apiError.message);
+            return res.status(apiError.response?.status || 500).json({
+                message: "Localização validada, mas a API externa rejeitou o desafio.",
+                error: apiError.response?.data || apiError.message
+            });
+        }
+
+    } catch (error) {
+        if (error.status) return res.status(error.status).json(error.data ? { ...error, ...error.data } : { message: error.message });
+        console.error("Erro no desafio:", error);
+        return res.status(500).json({ message: "Erro interno ao processar desafio." });
     }
 };
 
