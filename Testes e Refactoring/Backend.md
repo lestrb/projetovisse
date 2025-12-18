@@ -2,17 +2,13 @@
 
 ## Descrição
 
-**Sistema:**  
-Visse?
+**Sistema:** Visse?
 
-**Módulo/Subsistema:**  
-Backend – Serviços, Controllers e API REST
+**Módulo/Subsistema:** Backend – Serviços, Controllers e API REST
 
-**Data:**  
-Dezembro de 2025
+**Data:** Dezembro de 2025
 
-**Breve Descrição:**  
-Este documento descreve os testes automatizados realizados no backend do sistema Visse?. Os testes validam regras de negócio, integração com serviços externos, segurança das rotas e tratamento de erros. Foram contemplados testes de lógica interna, integração com APIs externas e validação de respostas HTTP.
+**Breve Descrição:** Este documento descreve os testes automatizados realizados no backend do sistema Visse?. Os testes validam regras de negócio, integração com serviços externos, segurança das rotas e tratamento de erros. Foram contemplados testes de lógica interna (Caixa Branca), integração com APIs externas e validação de respostas HTTP.
 
 ---
 
@@ -47,40 +43,20 @@ Este documento descreve os testes automatizados realizados no backend do sistema
 
 ---
 
-### 3. Lógica de Anti-duplicidade de Locais
+### 3. Lógica de Anti-duplicidade de Locais (Caixa Branca)
+*Validação da constante `RAIO_BUSCA_COORD` (0.001 graus).*
 
 | Teste | Ação | Resultado Esperado | Falha |
 |------|------|-------------------|-------|
-| 0 | Inserção de coordenadas muito próximas | Retorno `true` (local duplicado) | Não |
-| 1 | Inserção de coordenadas distantes | Retorno `false` (local novo) | Não |
+| 0 | Inserção de coordenada idêntica (Duplicata exata) | Retorno `true` (Bloqueado) | Não |
+| 1 | Inserção de coordenada dentro do delta 0.001 (Vizinho) | Retorno `true` (Bloqueado) | Não |
+| 2 | Inserção de coordenada fora do delta (Distante) | Retorno `false` (Permitido) | Não |
 
 ---
 
-### 4. Conversão de Pontos
+### 4. Lógica de Distância GPS - Haversine (Caixa Branca)
+*Validação da fórmula matemática para o Check-in (Raio de 200m).*
 
 | Teste | Ação | Resultado Esperado | Falha |
 |------|------|-------------------|-------|
-| 0 | Conversão de 1250 pontos | Resultado: 2 unidades e resto 250 | Não |
-
----
-
-### 5. Segurança e Validação da API
-
-| Teste | Ação | Resultado Esperado | Falha |
-|------|------|-------------------|-------|
-| 0 | Requisição GET para `/test` | Status 200 OK | Não |
-| 1 | POST sem token JWT | Requisição bloqueada | Não |
-| 2 | Envio de JSON inválido | Status 400 Bad Request | Não |
-
----
-
-## Refactoring (Refatoração)
-
-Durante a execução dos testes, foram identificados e corrigidos diversos *bad smells* no código:
-
-- **Código duplicado:** blocos repetidos de exclusão de arquivos temporários foram extraídos para a função `limparArquivoTemporario`, reduzindo redundância.
-- **Números mágicos:** valores como `0.001` (distância mínima) e `500` (taxa de conversão) foram substituídos por constantes nomeadas.
-- **Método longo / classe inchada:** a função `createLocal` foi decomposta em funções menores e parte da lógica foi movida para serviços especializados.
-- **Dados hardcoded:** listas fixas de strings foram extraídas para arquivos JSON externos, facilitando manutenção.
-  
-Essas refatorações aumentaram a legibilidade, manutenibilidade e testabilidade do backend.
+| 0 | Cálculo de distância para o mesmo ponto (0m) |
