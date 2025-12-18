@@ -20,6 +20,10 @@ app.use(express.json());
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+app.get('/', (req, res) => {
+    res.send('API Visse está online e rodando no Docker!'); // Para página inicial
+});
+
 app.use(router); 
 
 // Conecta ao banco
