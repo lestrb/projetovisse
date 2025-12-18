@@ -1,153 +1,93 @@
-import React, { useState } from 'react';
+// alterei a pagina para agora termos um botao de check in nos locais
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FiArrowLeft, FiHeart, FiStar, FiMapPin, FiShare2, FiClock } from 'react-icons/fi';
+import { FiArrowLeft, FiMapPin, FiCheckCircle, FiLoader, FiAlertTriangle } from 'react-icons/fi';
+import api from '../../services/api';
 
 export default function DetalhesLocalScreen() {
-  const { id } = useParams(); // Pega o ID do local da URL
+  const { id } = useParams();
   const navigate = useNavigate();
+  const [local, setLocal] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [checkinLoading, setCheckinLoading] = useState(false);
+  const [jaVisitou, setJaVisitou] = useState(false);
+  const [feedback, setFeedback] = useState({ type: '', msg: '' });
 
-  // Estados locais para curtidas e favoritos
-  const [curtido, setCurtido] = useState(false);
-  const [favorito, setFavorito] = useState(false);
-  const [contadorCurtidas, setContadorCurtidas] = useState(128); // Começa com 128 curtidas fake
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [localRes, pontuacaoRes] = await Promise.all([
+          api.get(`/locais/${id}`),
+          api.get('/pontuacao/minha')
+        ]);
+        setLocal(localRes.data);
+        const visitou = pontuacaoRes.data.historico_recente.some(
+          h => h.acao === 'VISITAR_LOCAL' && h.local_id === id
+        );
+        setJaVisitou(visitou);
+      } catch (err) {
+        console.error("Erro ao carregar dados", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [id]);
 
-  // Dados simulados do local (ainda sem backend)
-  const localData = {
-    id: id,
-    nome: 'Sovaj Veg Bar',
-    tipo: 'Gastronomia • Bar',
-    endereco: 'Rua da Glória, 123 - Boa Vista, Recife',
-    descricao: 'Um bar vegano com uma vibe maravilhosa no coração da Boa Vista. Perfeito para happy hour agradável, tem coxinha de jaca e cerveja gelada. O ambiente é cheio de plantas e toca música alt brasileira.',
-    imagem: 'https://imagens.ne10.uol.com.br/veiculos/_midias/jpg/2024/10/02/img_4476-32921678.jpeg',
-    autor: 'Clara Laranjeira',
-    horario: 'Aberto hoje • 18:00 - 02:00'
-  };
+const handleCheckIn = () => {
+  if (!navigator.geolocation) return alert("GPS não suportado.");
 
-  // Para simular a lógica de curtir e favoritar
-  const handleCurtir = () => {
-    setCurtido(!curtido);
-    setContadorCurtidas(prev => curtido ? prev - 1 : prev + 1);
-    
-    // Aqui eu enviaria a requisição para o backend
-  };
+  setCheckinLoading(true);
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    try {
+      const res = await api.post('/locais/check-in', {
+        local_id: id, 
+        userLat: pos.coords.latitude,
+        userLon: pos.coords.longitude
+      });
 
-  const handleFavoritar = () => {
-    setFavorito(!favorito);
-    
-    // Aqui eu enviaria a requisição para o backend
-  };
+      setFeedback({ type: 'success', msg: res.data.message }); // "Parabéns! +20 pontos"
+      setJaVisitou(true);
+    } catch (err) {
+      setFeedback({ type: 'error', msg: err.response?.data?.message || "Erro ao validar" });
+    } finally {
+      setCheckinLoading(false);
+    }
+  });
+};
+
+  if (loading) return <div className="flex justify-center p-20"><FiLoader className="animate-spin" size={40}/></div>;
 
   return (
-    <div className="bg-white min-h-screen pb-20 font-inter">
-      
-      {/* Header com imagem */}
-      <div className="relative w-full h-80 bg-gray-200">
-        <img 
-          src={localData.imagem} 
-          alt={localData.nome} 
-          className="w-full h-full object-cover"
-        />
-        
-        {/* Para os ícones brancos aparecerem */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/40"></div>
-
-        {/* Botão de voltar */}
-        <button 
-          onClick={() => navigate(-1)} 
-          className="absolute top-4 left-4 p-3 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/30 transition z-10"
-        >
-          <FiArrowLeft size={24} />
-        </button>
+    <div className="bg-white min-h-screen pb-24">
+      <div className="relative h-64 bg-gray-200">
+        <img src={`http://localhost:3002${local?.imagem_url}`} className="w-full h-full object-cover" alt={local?.nome} />
+        <button onClick={() => navigate(-1)} className="absolute top-4 left-4 p-2 bg-white rounded-full shadow-md"><FiArrowLeft/></button>
       </div>
 
-      {/* Card arredondado que sobe na imagem) */}
-      <div className="relative -mt-10 bg-white rounded-t-[32px] px-6 pt-8 shadow-sm">
-        
-        {/* Nome e tipo */}
-        <div className="mb-5">
-          <span className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-bold mb-3 uppercase tracking-wide border border-blue-100">
-            {localData.tipo}
-          </span>
-          <h1 className="text-3xl font-extrabold text-gray-900 leading-tight">
-            {localData.nome}
-          </h1>
-        </div>
+      <div className="px-6 pt-6">
+        <h1 className="text-2xl font-bold">{local?.nome}</h1>
+        <p className="text-gray-500 flex items-center gap-1 mt-1"><FiMapPin/> {local?.endereco}</p>
 
-        {/* Endereço e horário */}
-        <div className="flex flex-col gap-3 mb-8 text-gray-600 text-sm">
-          <div className="flex items-start gap-3">
-            <div className="mt-0.5 min-w-[20px] text-[#00bcd4]">
-                <FiMapPin size={20} />
-            </div>
-            <span>{localData.endereco}</span>
+        <button 
+          onClick={handleCheckIn}
+          disabled={checkinLoading || jaVisitou}
+          className={`w-full mt-6 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg transition-all
+            ${jaVisitou ? 'bg-green-500 text-white' : 'bg-orange-500 text-white active:scale-95'}`}
+        >
+          {jaVisitou ? <><FiCheckCircle/> Visita confirmada!</> : checkinLoading ? <FiLoader className="animate-spin"/> : "📍 Validar visita (+20 pts)"}
+        </button>
+
+        {feedback.msg && (
+          <div className={`mt-4 p-4 rounded-xl text-sm ${feedback.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+            {feedback.msg}
           </div>
-          <div className="flex items-center gap-3">
-            <div className="min-w-[20px] text-[#00bcd4]">
-                <FiClock size={20} />
-            </div>
-            <span>{localData.horario}</span>
-          </div>
+        )}
+
+        <div className="mt-8">
+          <h3 className="font-bold border-b pb-2">Sobre este local</h3>
+          <p className="mt-2 text-gray-600 text-sm leading-relaxed">{local?.descricao}</p>
         </div>
-
-        {/* Curtir e favoritar */}
-        <div className="flex gap-4 mb-8 border-b border-gray-100 pb-8">
-          
-          {/* Botão de curtir */}
-          <button 
-            onClick={handleCurtir}
-            className={`flex-1 flex flex-col items-center justify-center gap-1 py-3 rounded-2xl border-2 transition active:scale-95 
-              border-red-200 text-red-500 
-              ${curtido ? 'bg-red-50' : 'bg-white hover:bg-red-50'}`}
-          >
-            {/* ternário que deixa o coração preenchido quando está curtido */}
-            <FiHeart size={24} fill={curtido ? "currentColor" : "none"} />
-            
-            <span className="text-sm font-semibold">
-              {curtido ? 'Curtido' : 'Curtir'}
-              <span className="ml-1 font-normal opacity-70">({contadorCurtidas})</span>
-            </span>
-          </button>
-
-          {/* Botão de favoritar */}
-          <button 
-            onClick={handleFavoritar}
-            className={`flex-1 flex flex-col items-center justify-center gap-1 py-3 rounded-2xl border-2 transition active:scale-95 
-              border-blue-200 text-blue-500 
-              ${favorito ? 'bg-blue-50' : 'bg-white hover:bg-blue-50'}`}
-          >
-            {/* ternário que deixa o coração preenchido quando está favoritado */}
-            <FiStar size={24} fill={favorito ? "currentColor" : "none"} />
-            
-            <span className="text-sm font-semibold">
-              {favorito ? 'Salvo' : 'Favoritar'}
-            </span>
-          </button>
-
-        </div>
-
-        {/* Descrição do local */}
-        <div className="mb-8">
-          <h3 className="text-lg font-bold text-gray-900 mb-3">Sobre este lugar</h3>
-          <p className="text-gray-600 leading-relaxed text-base text-justify">
-            {localData.descricao}
-          </p>
-        </div>
-
-        {/* Quem indicou o local */}
-        <div className="bg-gray-50 rounded-xl p-4 flex items-center gap-4 border border-gray-100 mb-6">
-          <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden border-2 border-white shadow-sm">
-              <img 
-                src={`https://ui-avatars.com/api/?name=${localData.autor}&background=random&color=fff`} 
-                alt="Avatar autor" 
-                className="w-full h-full object-cover"
-              />
-          </div>
-          <div>
-            <p className="text-xs text-gray-400 uppercase font-bold tracking-wide">Indicado por</p>
-            <p className="text-gray-800 font-semibold">{localData.autor}</p>
-          </div>
-        </div>
-
       </div>
     </div>
   );
