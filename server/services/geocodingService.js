@@ -1,4 +1,5 @@
 import axios from 'axios';
+import addressTypes from '../Utils/addressTypes.json' assert { type: 'json' };
 
 const geocodeAddress = async (endereco) => {
   try {
@@ -25,24 +26,9 @@ const geocodeAddress = async (endereco) => {
     const addressType = result.type || '';
     const addressClass = result.class || '';
 
-    const tiposEspecificos = [
-      'house', 'building', 'residential', 'commercial', 'retail',
-      'road', 'street', 'pedestrian', 'footway', 'path',
-      'museum', 'university', 'school', 'hospital', 'clinic',
-      'restaurant', 'cafe', 'bar', 'shop', 'mall',
-      'park', 'attraction', 'monument', 'memorial',
-      'bus_stop', 'station', 'subway', 'airport',
-      'hotel', 'apartment', 'office', 'church', 'mosque', 'temple'
-    ];
+    const { tiposEspecificos, tiposMuitoGenericos } = addressTypes;
 
-    // Lista de tipos muito genericos que devem ser rejeitados
-    const tiposMuitoGenericos = [
-      'country', 'state', 'region', 'province',
-      'city', 'town', 'village', 'municipality',
-      'administrative'
-    ];
-
-    const isGenerico = tiposMuitoGenericos.includes(addressType) || 
+    const isGenerico = tiposMuitoGenericos.includes(addressType) ||
                        tiposMuitoGenericos.includes(addressClass) ||
                        addressType.includes('administrative');
 
@@ -54,7 +40,7 @@ const geocodeAddress = async (endereco) => {
     const displayName = result.display_name || '';
     const temCEP = /\d{5}-?\d{3}/.test(displayName);
     const temNumero = /\d+/.test(endereco); // Verifica se o usuário digitou algum número
-    const isEspecifico = tiposEspecificos.includes(addressType) || 
+    const isEspecifico = tiposEspecificos.includes(addressType) ||
                          tiposEspecificos.includes(addressClass);
 
     // Se não é um tipo específico conhecido, não tem CEP e nem número, rejeita

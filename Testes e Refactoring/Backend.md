@@ -246,4 +246,57 @@ O controller `createLocal` violava o Princípio da Responsabilidade Única (SRP)
 ### 4. Externalização de Dados (Hardcoded Data)
 Listas fixas de strings ou configurações que estavam "chumbadas" no código foram extraídas para facilitar a manutenção futura sem necessidade de alterar a lógica principal.
 
+**Arquivo:** `server/services/geocodingService.js`
+
+Listas extensas de tipos de locais aceitos ou rejeitados estavam escritas diretamente dentro da função de lógica, poluindo o código e dificultando a leitura. Elas foram movidas para um arquivo JSON externo.
+
+* **Antes (Hardcoded - Código Poluído):**
+    ```javascript
+    // Dentro da função geocodeAddress...
+    const tiposEspecificos = [
+      'house', 'building', 'residential', 'commercial', 'retail',
+      'road', 'street', 'pedestrian', 'footway', 'path',
+      'museum', 'university', 'school', 'hospital', 'clinic',
+      'restaurant', 'cafe', 'bar', 'shop', 'mall',
+      'park', 'attraction', 'monument', 'memorial',
+      'bus_stop', 'station', 'subway', 'airport',
+      'hotel', 'apartment', 'office', 'church', 'mosque', 'temple'
+    ];
+
+    const tiposMuitoGenericos = [
+      'country', 'state', 'region', 'province',
+      'city', 'town', 'village', 'municipality',
+      'administrative'
+    ];
+    ```
+
+* **Depois (Externalizado - Código Limpo):**
+    ```javascript
+    // Importação no topo do arquivo
+    import addressTypes from '../Utils/addressTypes.json' assert { type: 'json' };
+
+    // Uso dentro da função
+    const { tiposEspecificos, tiposMuitoGenericos } = addressTypes;
+    ```
+
+* **Novo Arquivo de Configuração:** `server/Utils/addressTypes.json`
+    ```json
+    {
+      "tiposEspecificos": [
+        "house", "building", "residential", "commercial", "retail",
+        "road", "street", "pedestrian", "footway", "path",
+        "museum", "university", "school", "hospital", "clinic",
+        "restaurant", "cafe", "bar", "shop", "mall",
+        "park", "attraction", "monument", "memorial",
+        "bus_stop", "station", "subway", "airport",
+        "hotel", "apartment", "office", "church", "mosque", "temple"
+      ],
+      "tiposMuitoGenericos": [
+        "country", "state", "region", "province",
+        "city", "town", "village", "municipality",
+        "administrative"
+      ]
+    }
+    ```
+
 Essas refatorações aumentaram a legibilidade, manutenibilidade e testabilidade do backend.
