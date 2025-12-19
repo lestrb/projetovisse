@@ -13,13 +13,23 @@ export default function ConversaoCapibaScreen() {
   const sobra = pontos % TAXA_CONVERSAO;
   const [sucesso, setSucesso] = useState(false);
 
-  const handleConverter = () => {
+  const handleConverter = async () => {
     if (moedasPossiveis <= 0) return;
-    setSucesso(true);
-    setTimeout(() => {
-      setPontos(sobra);
-      setSucesso(false);
-    }, 2500);
+    
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      try {
+        await pontuacaoService.converterParaCapiba(
+          pontos, // Total de pontos a converter
+          pos.coords.latitude, 
+          pos.coords.longitude
+        );
+        setSucesso(true);
+        // Atualiza o estado local após sucesso
+        setPontos(sobra); 
+      } catch (err) {
+        alert(err.message || "Erro na conversão");
+      }
+    });
   };
 
   // Tela de Sucesso (Feedback)
