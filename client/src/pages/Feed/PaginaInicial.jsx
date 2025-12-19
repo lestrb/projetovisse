@@ -107,14 +107,14 @@ function PaginaInicial() {
 
           <div className="flex flex-col sm:flex-row justify-center gap-6">
             
-            {/* Botão Cadastrar -> Vai para o Mapa */}
-            <Link to="/app/mapa">
+            {/* Botão cadastrar -> Vai para o formulário */}
+            <Link to="/app/adicionar-local">
               <button className="bg-white text-orange-600 font-bold py-4 px-8 rounded-xl shadow-lg hover:bg-gray-100 transition duration-300 flex items-center justify-center gap-3 w-full sm:w-auto">
                 🏛️ Cadastrar Local
               </button>
             </Link>
 
-            {/* Botão Visitar -> Vai para o Mapa */}
+            {/* Botão visitar -> Vai para o mapa */}
             <Link to="/app/mapa">
               <button className="bg-white text-orange-600 font-bold py-4 px-8 rounded-xl shadow-lg hover:bg-gray-100 transition duration-300 flex items-center justify-center gap-3 w-full sm:w-auto">
                 🚶 Visitar Local
