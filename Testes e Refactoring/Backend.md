@@ -244,6 +244,96 @@ O controller `createLocal` violava o Princípio da Responsabilidade Única (SRP)
 ---
 
 ### 4. Externalização de Dados (Hardcoded Data)
-Listas fixas de strings ou configurações que estavam "chumbadas" no código foram extraídas para facilitar a manutenção futura sem necessidade de alterar a lógica principal.
+Listas extensas de tipos de locais aceitos ou rejeitados estavam escritas diretamente dentro da função de lógica, poluindo o código e dificultando a leitura. Elas foram movidas para um arquivo JSON externo.
+
+* **Antes (Hardcoded - Código Poluído):**
+    ```javascript
+    // Dentro da função geocodeAddress...
+    const tiposEspecificos = [
+      'house', 'building', 'residential', 'commercial', 'retail',
+      'road', 'street', 'pedestrian', 'footway', 'path',
+      'museum', 'university', 'school', 'hospital', 'clinic',
+      'restaurant', 'cafe', 'bar', 'shop', 'mall',
+      'park', 'attraction', 'monument', 'memorial',
+      'bus_stop', 'station', 'subway', 'airport',
+      'hotel', 'apartment', 'office', 'church', 'mosque', 'temple'
+    ];
+
+    const tiposMuitoGenericos = [
+      'country', 'state', 'region', 'province',
+      'city', 'town', 'village', 'municipality',
+      'administrative'
+    ];
+    ```
+
+* **Depois (Controller Limpo - Apenas Orquestração):**
+    ```javascript
+    import axios from 'axios';
+    import addressTypes from '../Utils/addressTypes.json' with { type: 'json' };
+
+    const geocodeAddress = async (endereco) => {
+    try {
+        // Requisição para API do OpenStreetMap (Nominatim)
+        const response = await axios.get('https://nominatim.openstreetmap.org/search', {
+        params: {
+            q: endereco,
+            format: 'json',
+            limit: 1,
+            countrycodes: 'br',
+            'accept-language': 'pt'
+        },
+        headers: {
+            'User-Agent': 'ProjetoVisse/1.0'
+        }
+        });
+
+        // Verifica se encontrou resultados
+        if (!response.data || response.data.length === 0) {
+        throw new Error('Endereço não encontrado. Verifique se digitou corretamente.');
+        }
+
+        const result = response.data[0];
+        const addressType = result.type || '';
+        const addressClass = result.class || '';
+
+        const isGenerico = addressTypes[0].tiposMuitoGenericos.includes(addressType) || 
+                        addressTypes[0].tiposMuitoGenericos.includes(addressClass) ||
+                        addressType.includes('administrative');
+
+        if (isGenerico) {
+        throw new Error('Endereço muito genérico. Adicione mais detalhes (rua, número, bairro ou ponto de referência).');
+        }
+
+        // verificar se o resultado tem pelo menos um CEP, rua ou ponto específico
+        const displayName = result.display_name || '';
+        const temCEP = /\d{5}-?\d{3}/.test(displayName);
+        const temNumero = /\d+/.test(endereco); // Verifica se o usuário digitou algum número
+        const isEspecifico = addressTypes[0].tiposEspecificos.includes(addressType) || 
+                            addressTypes[0] .tiposEspecificos.includes(addressClass);
+
+                        //...
+    }}
+    ```
+
+* **Novo Arquivo de Configuração:** `server/Utils/addressTypes.json`
+    ```json
+    [{
+    "tiposEspecificos": [
+        "house", "building", "residential", "commercial", "retail",
+        "road", "street", "pedestrian", "footway", "path",
+        "museum", "university", "school", "hospital", "clinic",
+        "restaurant", "cafe", "bar", "shop", "mall",
+        "park", "attraction", "monument", "memorial",
+        "bus_stop", "station", "subway", "airport",
+        "hotel", "apartment", "office", "church"
+    ],
+    "tiposMuitoGenericos": [
+        "country", "state", "region", "province",
+        "city", "town", "village", "municipality",
+        "administrative"
+    ]
+    }]
+
+---
 
 Essas refatorações aumentaram a legibilidade, manutenibilidade e testabilidade do backend.
