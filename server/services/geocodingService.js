@@ -1,5 +1,5 @@
 import axios from 'axios';
-import addressTypes from '../Utils/addressTypes.json';
+import addressTypes from '../Utils/addressTypes.json' with { type: 'json' };
 
 const geocodeAddress = async (endereco) => {
   try {
