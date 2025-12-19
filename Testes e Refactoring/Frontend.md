@@ -85,3 +85,23 @@ Durante os testes de interface, foram identificados problemas de organização v
 - **Separação de responsabilidades:** os estilos foram movidos para arquivos `.css`, permitindo reutilização e melhor legibilidade do código.
   
 Essas alterações melhoraram a organização do frontend e facilitaram a evolução dos componentes visuais.
+
+## Evidências de Refatoração
+
+**Problema identificado:**  
+Uso de estilos CSS definidos diretamente no JSX, dificultando manutenção e reutilização do código.
+
+**Solução aplicada:**  
+Os estilos inline foram removidos e movidos para arquivos CSS externos, garantindo melhor separação entre lógica e apresentação.
+
+**Arquivos impactados:**
+- client/src/pages/ConversaoCapiba/ConversaoCapibaScreen.jsx
+- client/src/pages/Login/index.jsx
+- client/src/pages/Feed/PaginaInicial.jsx
+- client/src/pages/Profile/ProfileScreen.jsx
+- client/src/components/Header.jsx
+- client/src/components/Footer.jsx
+
+**Resultado obtido:**  
+Código mais limpo, organizado e reutilizável, sem alteração do comportamento funcional da aplicação.
+
