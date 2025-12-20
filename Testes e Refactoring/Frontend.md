@@ -2,17 +2,13 @@
 
 ## Descrição
 
-**Sistema:**  
-Visse?
+**Sistema:** Visse?
 
-**Módulo/Subsistema:**  
-Frontend – Interface do Usuário
+**Módulo/Subsistema:** Frontend – Interface do Usuário
 
-**Data:**  
-Dezembro de 2025
+**Data:** Dezembro de 2025
 
-**Breve Descrição:**  
-Este documento descreve os testes realizados no frontend da aplicação Visse?, com foco na renderização correta dos componentes e na experiência do usuário. Os testes garantem que os elementos principais da interface estejam visíveis e acessíveis após a renderização inicial.
+**Breve Descrição:** Este documento descreve os testes realizados no frontend da aplicação Visse?, com foco na renderização correta dos componentes e na experiência do usuário. Os testes garantem que os elementos principais da interface estejam visíveis e acessíveis após a renderização inicial.
 
 ---
 
@@ -43,7 +39,7 @@ Este documento descreve os testes realizados no frontend da aplicação Visse?, 
 
 | Teste | Ação | Resultado Esperado | Falha |
 |------|------|-------------------|-------|
-| 1 | Renderização da tela de conversão de Capibas | Textos “Capibas” e botão de conversão visíveis | Não |
+| 1 | Renderização da tela de conversão de Capibas | Título "Carteira Digital" carregado e textos de moeda “Capibas” visíveis | Não |
 | 2 | Renderização da tela de Login | Campos de email, senha e botão de login visíveis | Não |
 | 3 | Renderização da Página Inicial (Feed) | Lista de locais carregada e elementos visuais exibidos | Não |
 | 4 | Renderização do Mapa Interativo | Mapa Leaflet carregado com marcadores visíveis | Não |
@@ -88,11 +84,9 @@ Essas alterações melhoraram a organização do frontend e facilitaram a evolu�
 
 ## Evidências de Refatoração
 
-**Problema identificado:**  
-Uso de estilos CSS definidos diretamente no JSX, dificultando manutenção e reutilização do código.
+**Problema identificado:** Uso de estilos CSS definidos diretamente no JSX, dificultando manutenção e reutilização do código.
 
-**Solução aplicada:**  
-Os estilos inline foram removidos e movidos para arquivos CSS externos, garantindo melhor separação entre lógica e apresentação.
+**Solução aplicada:** Os estilos inline foram removidos e movidos para arquivos CSS externos, garantindo melhor separação entre lógica e apresentação.
 
 **Arquivos impactados:**
 - client/src/pages/ConversaoCapiba/ConversaoCapibaScreen.jsx
@@ -102,6 +96,4 @@ Os estilos inline foram removidos e movidos para arquivos CSS externos, garantin
 - client/src/components/Header.jsx
 - client/src/components/Footer.jsx
 
-**Resultado obtido:**  
-Código mais limpo, organizado e reutilizável, sem alteração do comportamento funcional da aplicação.
-
+**Resultado obtido:** Código mais limpo, organizado e reutilizável, sem alteração do comportamento funcional da aplicação.
