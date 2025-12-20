@@ -4,7 +4,7 @@ export const pontuacaoService = {
   // Buscar pontuação do usuário logado
   async buscarMinhaPontuacao() {
     try {
-      const response = await api.get('/pontuacao/minha');
+      const response = await api.get('/pontuacao'); 
       return response.data;
     } catch (error) {
       throw error.response?.data || { message: 'Erro ao buscar pontuação' };
@@ -21,6 +21,7 @@ export const pontuacaoService = {
       });
       return response.data;
     } catch (error) {
+      console.error(error);
       throw error.response?.data || { message: 'Erro ao converter pontos' };
     }
   }

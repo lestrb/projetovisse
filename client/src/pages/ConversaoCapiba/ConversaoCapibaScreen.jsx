@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiCheckCircle, FiRefreshCw } from 'react-icons/fi';
+import { pontuacaoService } from '../../services/pontuacaoService';
 
 export default function ConversaoCapibaScreen() {
   const navigate = useNavigate();
   
-  // Saldo inicial (simulado)
+  // Saldo inicial (simulado - idealmente viria do useEffect chamando buscarMinhaPontuacao)
   const [pontos, setPontos] = useState(2500); 
   const TAXA_CONVERSAO = 500; // 500 pts = 1 moeda
   
@@ -16,19 +17,25 @@ export default function ConversaoCapibaScreen() {
   const handleConverter = async () => {
     if (moedasPossiveis <= 0) return;
     
+    // Pegar Geolocalização do navegador
     navigator.geolocation.getCurrentPosition(async (pos) => {
       try {
+        // Chamada ao serviço
         await pontuacaoService.converterParaCapiba(
           pontos, // Total de pontos a converter
           pos.coords.latitude, 
           pos.coords.longitude
         );
+        
         setSucesso(true);
         // Atualiza o estado local após sucesso
         setPontos(sobra); 
       } catch (err) {
         alert(err.message || "Erro na conversão");
       }
+    }, (geoError) => {
+      alert("Precisamos da sua localização para validar a conversão. Verifique se o GPS está ativo.");
+      console.error(geoError);
     });
   };
 
@@ -43,6 +50,12 @@ export default function ConversaoCapibaScreen() {
         <p className="text-gray-500">
           Você resgatou <span className="text-green-600 font-bold">{moedasPossiveis} moedas capiba</span>.
         </p>
+        <button 
+          onClick={() => navigate('/perfil')} 
+          className="mt-6 text-blue-600 font-semibold hover:underline"
+        >
+          Voltar ao Perfil
+        </button>
       </div>
     );
   }
