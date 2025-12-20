@@ -88,20 +88,47 @@ Essas alterações melhoraram a organização do frontend e facilitaram a evolu�
 
 ## Evidências de Refatoração
 
-**Problema identificado:**  
-Uso de estilos CSS definidos diretamente no JSX, dificultando manutenção e reutilização do código.
+### 1. Estilos Inline para CSS externo
+O código original apresentava alto acoplamento entre lógica e apresentação através de estilos inline dentro do JSX. Aplicamos a separação de responsabilidades movendo a estilização para arquivos CSS externos e classes utilitárias.
 
-**Solução aplicada:**  
-Os estilos inline foram removidos e movidos para arquivos CSS externos, garantindo melhor separação entre lógica e apresentação.
+**Estilização de elementos de conversão**
+**Arquivo:** `client/src/pages/ConversaoCapiba/ConversaoCapibaScreen.jsx`
+* **Antes:** `<button style={{ backgroundColor: '#FF670F', color: 'white', borderRadius: '16px', padding: '12px', width: '100%', fontWeight: '600' }}>`
+* **Depois:** `<button className="btn-converter">` (referenciando `ConversaoCapiba.css`) ou uso de Tailwind.
 
-**Arquivos impactados:**
-- client/src/pages/ConversaoCapiba/ConversaoCapibaScreen.jsx
-- client/src/pages/Login/index.jsx
-- client/src/pages/Feed/PaginaInicial.jsx
-- client/src/pages/Profile/ProfileScreen.jsx
-- client/src/components/Header.jsx
-- client/src/components/Footer.jsx
+**Formatação de títulos e cabeçalhos**
+**Arquivo:** `client/src/components/Header.jsx`
+* **Antes:** `<header style={{ position: 'fixed', top: 0, width: '100%', background: 'linear-gradient(45deg, #00c6ff, #ff7a00)' }}>`
+* **Depois:** `<header className="topo">` (referenciando `global.css`).
 
-**Resultado obtido:**  
-Código mais limpo, organizado e reutilizável, sem alteração do comportamento funcional da aplicação.
+---
 
+### 2. Centralização de Layout e redução de redundância
+Anteriormente, elementos estruturais como Cabeçalho e Rodapé eram repetidos manualmente ou gerenciados por seletores globais rígidos. Refatoramos a estrutura para utilizar componentes reutilizáveis.
+
+**Organização de rodapé**
+**Arquivo:** `client/src/components/Footer.jsx`
+* **Antes:** O código do footer era escrito manualmente no final de cada arquivo de página com estilos inline de posicionamento.
+* **Depois:** Criação do componente funcional `<Footer />` com classes de estilização centralizadas.
+
+**Padronização de formulários**
+**Arquivo:** `client/src/pages/Login/index.jsx`
+* **Antes:** `<input style={{ background: '#f3f5f7', padding: '14px', borderRadius: '14px', border: 'none' }} />`
+* **Depois:** `<input className="input-form">` (referenciando `Formularios.css`).
+
+---
+
+### 3. Melhoria na legibilidade e manutenibilidade do JSX
+A remoção de grandes objetos de estilo de dentro do retorno dos componentes permitiu que o foco do arquivo ficasse apenas na estrutura e lógica do React.
+
+**Cards de Perfil e Feed**
+**Arquivo:** `client/src/pages/Profile/ProfileScreen.jsx`
+* **Antes:** Divs de container com `style={{ display: 'flex', boxShadow: '0 3px 8px rgba(0,0,0,0.1)', marginTop: '16px' }}`.
+* **Depois:** Uso da classe `.card` (referenciando `ListaDescricoes.css`).
+
+**Gestão de espaçamento global**
+**Arquivo:** `client/src/pages/Feed/PaginaInicial.jsx`
+* **Antes:** Uso de tags `<br />` ou `style={{ marginBottom: '80px' }}` para evitar sobreposição com a navbar.
+* **Depois:** Aplicação de padding constante via classes CSS no container principal.
+
+---
