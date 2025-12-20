@@ -93,12 +93,18 @@ O código original apresentava alto acoplamento entre lógica e apresentação a
 
 **Estilização de elementos de conversão**
 **Arquivo:** `client/src/pages/ConversaoCapiba/ConversaoCapibaScreen.jsx`
-* **Antes:** `<button style={{ backgroundColor: '#FF670F', color: 'white', borderRadius: '16px', padding: '12px', width: '100%', fontWeight: '600' }}>`
+* **Antes:**
+```javascript
+    <button style={{ backgroundColor: '#FF670F', color: 'white', borderRadius: '16px', padding: '12px', width: '100%', fontWeight: '600' }}>
+```
 * **Depois:** `<button className="btn-converter">` (referenciando `ConversaoCapiba.css`) ou uso de Tailwind.
 
 **Formatação de títulos e cabeçalhos**
 **Arquivo:** `client/src/components/Header.jsx`
-* **Antes:** `<header style={{ position: 'fixed', top: 0, width: '100%', background: 'linear-gradient(45deg, #00c6ff, #ff7a00)' }}>`
+* **Antes:**
+```javascript
+    <header style={{ position: 'fixed', top: 0, width: '100%', background: 'linear-gradient(45deg, #00c6ff, #ff7a00)' }}>
+```
 * **Depois:** `<header className="topo">` (referenciando `global.css`).
 
 ---
@@ -113,7 +119,10 @@ Anteriormente, elementos estruturais como Cabeçalho e Rodapé eram repetidos ma
 
 **Padronização de formulários**
 **Arquivo:** `client/src/pages/Login/index.jsx`
-* **Antes:** `<input style={{ background: '#f3f5f7', padding: '14px', borderRadius: '14px', border: 'none' }} />`
+* **Antes:**
+```javascript
+    <input style={{ background: '#f3f5f7', padding: '14px', borderRadius: '14px', border: 'none' }} />
+```
 * **Depois:** `<input className="input-form">` (referenciando `Formularios.css`).
 
 ---
